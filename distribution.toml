@@ -1,0 +1,34 @@
+version = "*"
+# version = "3.*"
+# version = "~=3.5"
+
+license_key = "abcdef..."
+# license_key = "$my_license_env"
+# license_key = "<./my_license_file"
+
+[plugins]
+my_plugin = "*"
+my_other_plugin = "1.2.4"
+
+custom_plugin = { git = "https://github.com/me/my_matomo_plugin", ref = "master" }
+custom_other_plugin = { link = "https://my-site.com/my_plugin.zip" }
+
+[customisation.manifest]
+regenerate=true
+
+[customisation.remove]
+example_plugins=true
+vendored_extras=true
+documentation=true
+build_support=true
+tests=true
+git_support=true
+marketplace = true
+professional_services = true
+
+[customisation.update]
+cacert=true
+
+# [customisation.plugins_installed]
+# add_plugins = true
+# add_installed = true
