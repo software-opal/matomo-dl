@@ -4,13 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-attrs = "*"
-"beautifulsoup4" = "*"
-lxml = "*"
-packaging = "*"
-requests = {extras = ["security"]}
-toml = "*"
-click = "*"
+matomo-dl = {editable = true, path = "."}
+cattrs = "*"
 
 [requires]
 python_version = "3.6"
+
+[dev-packages]
+black = "*"
+
+[pipenv]
+allow_prereleases = true

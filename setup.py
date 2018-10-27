@@ -20,7 +20,8 @@ with open(os.path.join(here, "matomo_dl", "__version__.py")) as f:
 required = [
     "attrs~=18.2",
     "beautifulsoup4~=4.6",
-    "click~=7.1",
+    "cattrs==0.9.0",
+    "click~=7.0",
     "lxml~=4.2",
     "packaging~=18.0",
     "requests[security]==2.20",
@@ -29,11 +30,11 @@ required = [
 
 
 setup(
-    name="pipenv",
+    name="matomo-dl",
     version=about["__version__"],
     description=".",
     long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     author="Opal Symes",
     author_email="opal@catalyst.net.nz",
     packages=find_packages(),

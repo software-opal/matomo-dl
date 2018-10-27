@@ -7,11 +7,26 @@ license_key = "abcdef..."
 # license_key = "<./my_license_file"
 
 [plugins]
-my_plugin = "*"
-my_other_plugin = "1.2.4"
+AbTesting = "*"
+ActivityLog = "*"
+CustomDimensions = "*"
+CustomAlerts = "*"
+CustomReports = "*"
+FormAnalytics = "*"
+Funnels = "*"
+HeatmapSessionRecording = "*"
+MultiChannelConversionAttribution = "*"
+MarketingCampaignsReporting = "*"
+MediaAnalytics = "*"
+QueuedTracking = "*"
+RollUpReporting = "*"
+SearchEngineKeywordsPerformance = "*"
+UsersFlow = "*"
+IP2Location = "*"
 
-custom_plugin = { git = "https://github.com/me/my_matomo_plugin", ref = "master" }
-custom_other_plugin = { link = "https://my-site.com/my_plugin.zip" }
+[plugins.SiteCreationAutomation]
+git = "https://gitlab.wgtn.cat-it.co.nz/elearning/SiteCreationAutomation.git"
+ref = "dd931e27152ca385fe17f45c0458588c622671f8"
 
 [customisation.manifest]
 regenerate=true

@@ -9,42 +9,47 @@ from .hashing import HashInfo, all_hashes_for_data, hashes_for_data
 
 
 class HttpLoggingAdapter(HTTPAdapter):
-
     def send(self, request, *a, **k):
-        if request.url.startswith('http://'):
+        if request.url.startswith("http://"):
             print("WARNING: Request sent over HTTP.\n\t{}".format(request.url))
         return super().send(request, *a, **k)
 
 
 class SessionStore(requests.Session):
-
-    def __init__(self, *a, cache_folder, **k):
+    def __init__(self, *a, cache_dir, **k):
         super().__init__(*a, **k)
         self.mount("http://", HttpLoggingAdapter())
-        self.cache_folder = pathlib.Path(cache_folder)
+        if cache_dir:
+            self.cache_dir = pathlib.Path(cache_dir)
+        else:
+            self.cache_dir = None
 
     def store_cache_data(self, cache_key: str, data: bytes) -> HashInfo:
-        assert re.match(r'^[0-9a-z\-_.]+$', cache_key)
-        file = self.cache_folder / "{}.dat".format(cache_key)
-        file.write_bytes(data)
-        hash_file = self.cache_folder / "{}.dat.check".format(cache_key)
         hashes = all_hashes_for_data(data)
-        hash_file.write('\n'.join(
-            '{}:{}'.format(algo, val)
-            for algo, val in hashes.items()
-        ))
+        if self.cache_dir:
+            assert re.match(r"^[0-9a-z\-_.]+$", cache_key)
+            file = self.cache_dir / "{}.dat".format(cache_key)
+            file.write_bytes(data)
+            hash_file = self.cache_dir / "{}.dat.check".format(cache_key)
+            hash_file.write_text(
+                "\n".join("{}:{}".format(algo, val) for algo, val in hashes.items())
+            )
         return hashes
 
-    def retrieve_cache_data(self, cache_key: str, expected_hashes: typ.Mapping[str, str]) -> typ.Tuple[typ.Optional[bytes], HashInfo]:
-        assert re.match(r'^[0-9a-z\-_.]+$', cache_key)
+    def retrieve_cache_data(
+        self, cache_key: str, expected_hashes: typ.Mapping[str, str]
+    ) -> typ.Tuple[typ.Optional[bytes], HashInfo]:
+        if not self.cache_dir:
+            return None, {}
+        assert re.match(r"^[0-9a-z\-_.]+$", cache_key)
         assert expected_hashes
-        file = self.cache_folder / "{}.dat".format(cache_key)
-        hash_file = self.cache_folder / "{}.dat.check".format(cache_key)
+        file = self.cache_dir / "{}.dat".format(cache_key)
+        hash_file = self.cache_dir / "{}.dat.check".format(cache_key)
         if not file.exists() or not hash_file.exists():
             return None, {}
         digests = {}
         for hash_line in hash_file.read_text().splitlines():
-            algo, _, digest = hash_line.rpartition(':')
+            algo, _, digest = hash_line.rpartition(":")
             if digest:
                 digests[algo] = digest
         has_match = False

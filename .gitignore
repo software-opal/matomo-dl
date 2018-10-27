@@ -1,0 +1,5 @@
+*.egg-info
+
+.cache
+.mypy_cache
+.ropeproject

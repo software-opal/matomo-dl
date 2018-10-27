@@ -4,17 +4,13 @@ import hashlib
 import types
 import typing as typ
 
-desired_algorithms = [
-    'blake2b',
-    'sha3_512',
-    'sha512',
-]
+desired_algorithms = ["blake2b", "sha3_512", "sha512"]
 
 HashInfo = typ.Mapping[str, str]
 
 
 def all_hashes_for_data(data: bytes) -> HashInfo:
-    return types.MappingProxyType(collections.OrderedDict(hashes_for_data))
+    return types.MappingProxyType(collections.OrderedDict(hashes_for_data(data)))
 
 
 def hashes_for_data(data: bytes) -> typ.Iterator[typ.Tuple[str, str]]:

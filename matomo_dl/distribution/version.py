@@ -5,21 +5,12 @@ from packaging.specifiers import SpecifierSet
 
 
 class Version:
-
-    @property
-    def specifier(self):
-        raise NotImplementedError()
-
-    @property
-    def version(self):
-        raise NotImplementedError()
-
     @property
     def matches_one_only(self) -> bool:
         return isinstance(self, ExactVersion)
 
     @property
-    def matches_any(self)-> bool:
+    def matches_any(self) -> bool:
         return isinstance(self, AnyVersion)
 
     def choose_version(self, versions: typ.Collection[str]) -> typ.Optional[str]:
@@ -36,7 +27,6 @@ class Version:
 
 @attr.s
 class AnyVersion(Version):
-
     @property
     def specifier(self):
         return SpecifierSet("")
@@ -45,10 +35,10 @@ class AnyVersion(Version):
 @attr.s
 class DynamicVersion(Version):
 
-    specifier: SpecifierSet = attr.ib(required=True)
+    specifier: SpecifierSet = attr.ib()
 
 
 @attr.s
 class ExactVersion(Version):
 
-    version: str = attr.ib(required=True)
+    version: str = attr.ib()
