@@ -1,9 +1,8 @@
-import pathlib
 import typing as typ
 
 import attr
 
-from ..hashing import HashInfo
+from matomo_dl.hashing import HashInfo
 from .version import ExactVersion
 
 

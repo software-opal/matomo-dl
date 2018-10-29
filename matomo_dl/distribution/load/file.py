@@ -47,7 +47,7 @@ def parse_plugins(
 ) -> typ.Collection[dist_file.Plugin]:
     if not plugins:
         return []
-    dat = []
+    dat: typ.List[dist_file.Plugin] = []
     for name, value in plugins.items():
         if isinstance(value, str):
             dat.append(dist_file.VersionedPlugin(name, parse_version(value)))
@@ -63,12 +63,12 @@ def parse_plugins(
 
 
 def parse_customisations(
-    customisations: typ.Optional[typ.Mapping[str, typ.Any]]
-) -> dist_file.Customisation:
+    customisations: typ.Optional[typ.MutableMapping[str, typ.Any]]
+) -> typ.Collection[dist_file.Customisation]:
     if not customisations:
         customisations = {}
     customisations.setdefault("manifest", {})
-    dat = []
+    dat: typ.List[dist_file.Customisation] = []
     for c_type, config in customisations.items():
         if c_type == "manifest":
             dat.append(dist_file.ManifestCustomisation(**config))

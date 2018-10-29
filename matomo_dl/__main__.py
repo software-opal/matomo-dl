@@ -1,15 +1,21 @@
+import logging
 import pathlib
 
 import click
+import click_log
 
-from .distribution.load import load_from_distribution_path
-from .distribution.lock import DistributionLockFile
-from .lock.matomo import sync_matomo_lock
-from .lock.plugin import sync_plugin_lock
-from .session import SessionStore
+from matomo_dl.distribution.load import load_from_distribution_path
+from matomo_dl.distribution.lock import DistributionLockFile
+from matomo_dl.lock.matomo import sync_matomo_lock
+from matomo_dl.lock.plugin import sync_plugin_lock
+from matomo_dl.session import SessionStore
+
+logger = logging.getLogger(__name__)
+click_log.basic_config(logger)
 
 
 @click.group()
+@click_log.simple_verbosity_option(logger)
 def cli():
     pass
 
@@ -48,7 +54,11 @@ def update(distribution_file, cache_dir):
     plugin_locks = {}
     for plugin in dist.plugins:
         p_lock = sync_plugin_lock(
-            session, license_key, plugin, old_plugin_locks.get(plugin.name.lower())
+            session,
+            license_key,
+            matomo_lock.version,
+            plugin,
+            old_plugin_locks.get(plugin.name.lower()),
         )
         plugin_locks[plugin.name.lower()] = p_lock
 

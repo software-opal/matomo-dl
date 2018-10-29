@@ -1,20 +1,20 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 import codecs
 import os
+import typing as typ
 
 from setuptools import find_packages, setup
 
 here = os.path.abspath(os.path.dirname(__file__))
-about = {}
+about: typ.Dict[str, typ.Any] = {}
 
 
 with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
     long_description = "\n" + f.read()
 
 
-with open(os.path.join(here, "matomo_dl", "__version__.py")) as f:
-    exec(f.read(), about)
+with open(os.path.join(here, "matomo_dl", "__version__.py")) as v:
+    exec(v.read(), about)
 
 
 required = [
@@ -22,9 +22,11 @@ required = [
     "beautifulsoup4~=4.6",
     "cattrs==0.9.0",
     "click~=7.0",
+    "click-log",
+    "colorama==0.4.0",
     "lxml~=4.2",
     "packaging~=18.0",
-    "requests[security]==2.20",
+    "requests[security]~=2.20",
     "toml==0.10.0",
 ]
 
@@ -44,7 +46,7 @@ setup(
             "matomo_dl=matomo_dl.__main__:cli",
         ]
     },
-    python_requires=">=3.5",
+    python_requires=">=3.6",
     install_requires=required,
     extras_require={},
     include_package_data=True,

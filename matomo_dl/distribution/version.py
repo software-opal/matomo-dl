@@ -5,6 +5,10 @@ from packaging.specifiers import SpecifierSet
 
 
 class Version:
+
+    version: typ.Optional[str] = None
+    specifier: typ.Optional[SpecifierSet] = None
+
     @property
     def matches_one_only(self) -> bool:
         return isinstance(self, ExactVersion)
@@ -18,7 +22,8 @@ class Version:
             return self.version if self.version in versions else None
         if not versions:
             return None
-        matching = sorted(self.specifier.filter(versions))
+        assert self.specifier
+        matching: typ.List[str] = sorted(self.specifier.filter(versions))
         if not matching:
             return None
         else:

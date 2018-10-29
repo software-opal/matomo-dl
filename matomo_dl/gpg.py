@@ -1,33 +1,45 @@
 import random
 import subprocess
 import tempfile
+import typing as typ
 
 
-class GPGVerifier:
+class GpgError(Exception):
+    pass
+
+
+class KeyImportError(GpgError):
+    pass
+
+
+class VerificationError(GpgError):
+    pass
+
+
+class GpgVerifier:
 
     keyservers = frozenset(("keys.gnupg.net", "keyserver.ubuntu.com", "pgp.mit.edu"))
 
-    def __init__(self):
-        self.tmp_folder = None
+    tmp_folder: typ.Optional[typ.IO] = None
 
-    def __enter__(self):
+    def __enter__(self) -> "GpgVerifier":
         if self.tmp_folder is None:
             self.tmp_folder = tempfile.NamedTemporaryFile()
             self.tmp_folder.__enter__()
         return self
 
-    def __exit__(self):
+    def __exit__(self, type, value, traceback):
         if self.tmp_folder is not None:
-            self.tmp_folder.__exit__()
+            self.tmp_folder.__exit__(type, value, traceback)
         self.tmp_folder = None
 
-    def get_tmp_folder(self):
+    def get_tmp_folder(self) -> str:
         if self.tmp_folder:
             return self.tmp_folder.name
         else:
             return self.__enter__().get_tmp_folder()
 
-    def gpg_call(self, *args, check=True, **kwargs):
+    def gpg_call(self, *args: str, check=True, **kwargs: typ.Any):
         args = (
             "gpg",
             "--batch",
@@ -35,9 +47,10 @@ class GPGVerifier:
             "--keyring",
             self.get_tmp_folder(),
         ) + args
+        kwargs.setdefault("input", "")
         return subprocess.run(args, check=check, **kwargs)
 
-    def load_fingerprint(self, fingerprint):
+    def load_fingerprint(self, fingerprint: str):
         err = None
         for attempt in range(3):
             key_server = random.choice(list(self.keyservers))
@@ -46,13 +59,19 @@ class GPGVerifier:
                 return
             except subprocess.CalledProcessError as e:
                 err = e
-        raise err
+        raise KeyImportError() from err
 
-    def load_public_key(self, key_content):
-        self.gpg_call("--import", "-", input=key_content)
+    def load_public_key(self, key_content: typ.Union[str, bytes]):
+        try:
+            self.gpg_call("--import", "-", input=key_content)
+        except subprocess.CalledProcessError as e:
+            raise KeyImportError() from e
 
-    def verify(self, data: bytes, signature):
+    def verify(self, data: bytes, signature: bytes):
         with tempfile.NamedTemporaryFile("wb") as data_file:
             data_file.write(data)
             data_file.flush()
-            self.gpg_call("--verify", "-", data_file.name, input=signature)
+            try:
+                self.gpg_call("--verify", "-", data_file.name, input=signature)
+            except subprocess.CalledProcessError as e:
+                raise VerificationError() from e

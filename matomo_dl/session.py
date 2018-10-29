@@ -10,7 +10,11 @@ from .hashing import HashInfo, all_hashes_for_data, hashes_for_data
 
 class HttpLoggingAdapter(HTTPAdapter):
     def send(self, request, *a, **k):
-        if request.url.startswith("http://"):
+        if (
+            isinstance(request, requests.Request)
+            and request.url
+            and request.url.startswith("http://")
+        ):
             print("WARNING: Request sent over HTTP.\n\t{}".format(request.url))
         return super().send(request, *a, **k)
 

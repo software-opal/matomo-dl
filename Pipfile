@@ -12,6 +12,10 @@ python_version = "3.6"
 
 [dev-packages]
 black = "*"
+flake8 = "*"
+flake8-bugbear = "*"
+flake8-mypy = "*"
+mypy = "*"
 
 [pipenv]
 allow_prereleases = true
