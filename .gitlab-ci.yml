@@ -1,0 +1,150 @@
+
+stages:
+  - build
+  - test
+  - gitlab-utils
+  - release
+variables:
+  DOCKER_DRIVER: overlay2
+  CI_APPLICATION_REPOSITORY: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
+  CI_APPLICATION_TAG: $CI_COMMIT_SHA
+
+
+build-wheel:
+  image: python:3
+  stage: build
+  script:
+    - pip wheel .
+
+build-docker:
+  image: docker:stable
+  stage: build
+  services:
+    - docker:stable-dind
+  variables:
+  before_script:
+    - export PREVIOUS_APPLICATION_TAG=$(git rev-parse HEAD~1) || true
+    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
+    - docker pull $CI_APPLICATION_REPOSITORY:master $CI_APPLICATION_REPOSITORY:latest || true
+    - docker pull $CI_APPLICATION_REPOSITORY:$PREVIOUS_TAG || true
+  script:
+    - docker build
+        --cache-from=$CI_APPLICATION_REPOSITORY:{master,latest,$PREVIOUS_APPLICATION_TAG,$PREVIOUS_TAG}
+        --tag=$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG
+        .
+    - docker push $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG
+
+mypy:
+  image: python:3
+  stage: test
+  before_script:
+    - pip install pipenv
+    - pipenv install --dev
+  script:
+    - pipenv run mypy .
+
+black:
+  image: python:3
+  stage: test
+  before_script:
+    - pip install pipenv
+    - pipenv install --dev
+  script:
+    - pipenv run black --check --diff .
+
+flake8:
+  image: python:3
+  stage: test
+  before_script:
+    - pip install pipenv
+    - pipenv install --dev
+  script:
+    - pipenv run flake8 .
+
+
+release-docker-master:
+  image: docker:stable
+  stage: release
+  only:
+    refs:
+      - master
+  tags:
+    - dind
+  services:
+    - docker:stable-dind
+  before_script:
+    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG
+    - docker tag $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG softwareopal/matomo-dl:master
+    - docker push softwareopal/matomo-dl:master
+    - docker tag $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG $CI_APPLICATION_REPOSITORY:master
+    - docker push $CI_APPLICATION_REPOSITORY:master
+
+release-docker-tag:
+  image: docker:stable
+  stage: release
+  only: tags
+  tags:
+    - dind
+  services:
+    - docker:stable-dind
+  before_script:
+    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG
+    - docker tag $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG softwareopal/matomo-dl:$CI_COMMIT_TAG
+    - docker tag $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG softwareopal/matomo-dl:latest
+    - docker push softwareopal/matomo-dl:$CI_COMMIT_TAG
+    - docker push softwareopal/matomo-dl:latest
+
+
+
+##### Some GitLab magic.
+
+container_scanning:
+  image: docker:stable
+  stage: gitlab-utils
+  allow_failure: true
+  tags:
+    - dind
+  services:
+    - docker:stable-dind
+  script:
+    - ./ci/clair.sh
+  artifacts:
+    paths: [gl-container-scanning-report.json]
+sast:
+  image: docker:stable
+  stage: gitlab-utils
+  allow_failure: true
+  tags:
+    - dind
+  services:
+    - docker:stable-dind
+  script:
+    - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
+    - docker run
+        --env SAST_CONFIDENCE_LEVEL="${SAST_CONFIDENCE_LEVEL:-3}"
+        --volume "$PWD:/code"
+        --volume /var/run/docker.sock:/var/run/docker.sock
+        "registry.gitlab.com/gitlab-org/security-products/sast:$SP_VERSION" /app/bin/run /code
+  artifacts:
+    paths: [gl-sast-report.json]
+dependency_scanning:
+  image: docker:stable
+  stage: gitlab-utils
+  allow_failure: true
+  tags:
+    - dind
+  services:
+    - docker:stable-dind
+  script:
+    - export SP_VERSION=$(echo "$CI_SERVER_VERSION" | sed 's/^\([0-9]*\)\.\([0-9]*\).*/\1-\2-stable/')
+    - docker run
+        --env DEP_SCAN_DISABLE_REMOTE_CHECKS="${DEP_SCAN_DISABLE_REMOTE_CHECKS:-false}"
+        --volume "$PWD:/code"
+        --volume /var/run/docker.sock:/var/run/docker.sock
+        "registry.gitlab.com/gitlab-org/security-products/dependency-scanning:$SP_VERSION" /code
+  artifacts:
+    paths: [gl-dependency-scanning-report.json]
