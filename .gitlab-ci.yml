@@ -32,8 +32,8 @@ build-docker:
     - docker:stable-dind
   variables:
   before_script:
+    - docker login -u $CI_DEPLOY_RW_USER -p $CI_DEPLOY_RW_PASSWORD $CI_REGISTRY
     - export PREVIOUS_APPLICATION_TAG=$(git rev-parse HEAD~1) || true
-    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
     - docker pull $CI_APPLICATION_REPOSITORY:master $CI_APPLICATION_REPOSITORY:latest || true
     - docker pull $CI_APPLICATION_REPOSITORY:$PREVIOUS_TAG || true
   script:
@@ -82,11 +82,9 @@ release-docker-master:
   services:
     - docker:stable-dind
   before_script:
-    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
+    - docker login -u $CI_DEPLOY_RW_USER -p $CI_DEPLOY_RW_PASSWORD $CI_REGISTRY
   script:
     - docker pull $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG
-    - docker tag $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG softwareopal/matomo-dl:master
-    - docker push softwareopal/matomo-dl:master
     - docker tag $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG $CI_APPLICATION_REPOSITORY:master
     - docker push $CI_APPLICATION_REPOSITORY:master
 
@@ -100,13 +98,13 @@ release-docker-tag:
   services:
     - docker:stable-dind
   before_script:
-    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
+    - docker login -u $CI_DEPLOY_RW_USER -p $CI_DEPLOY_RW_PASSWORD $CI_REGISTRY
   script:
     - docker pull $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG
-    - docker tag $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG softwareopal/matomo-dl:$CI_COMMIT_TAG
-    - docker tag $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG softwareopal/matomo-dl:latest
-    - docker push softwareopal/matomo-dl:$CI_COMMIT_TAG
-    - docker push softwareopal/matomo-dl:latest
+    - docker tag $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG $CI_APPLICATION_REPOSITORY:$CI_COMMIT_TAG
+    - docker tag $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG $CI_APPLICATION_REPOSITORY:latest
+    - docker push $CI_APPLICATION_REPOSITORY:$CI_COMMIT_TAG
+    - docker push $CI_APPLICATION_REPOSITORY:latest
 
 pages:
   image: python:3

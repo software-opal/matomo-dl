@@ -6,7 +6,7 @@ RUN set -x \
     python3-pip \
     python3-setuptools \
     python3-wheel \
-  && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt
 COPY . /code
 RUN set -x \
   && mkdir /wheels \
@@ -17,15 +17,11 @@ FROM ubuntu:latest
 RUN set -x \
   && apt-get update \
   && apt-get install -y --no-install-recommends \
+    git \
     python3 \
     python3-pip \
     python3-setuptools \
     python3-wheel \
-  && rm -rf /var/lib/apt/lists/*
-RUN set -x \
-  && apt-get update \
-  && apt-get install -y --no-install-recommends \
-    git \
   && rm -rf /var/lib/apt/lists/*
 COPY --from=0 /wheels /wheels
 RUN set -x \
