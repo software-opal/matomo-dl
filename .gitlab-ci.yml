@@ -17,7 +17,7 @@ cache:
     - .cache/pip
 
 build-wheel:
-  image: python:3
+  image: python:3.6
   stage: build
   script:
     - pip wheel --wheel-dir ./wheels .
@@ -44,7 +44,7 @@ build-docker:
     - docker push $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG
 
 mypy:
-  image: python:3
+  image: python:3.6
   stage: test
   before_script:
     - pip install pipenv
@@ -53,7 +53,7 @@ mypy:
     - pipenv run mypy .
 
 black:
-  image: python:3
+  image: python:3.6
   stage: test
   before_script:
     - pip install pipenv
@@ -62,7 +62,7 @@ black:
     - pipenv run black --check --diff .
 
 flake8:
-  image: python:3
+  image: python:3.6
   stage: test
   before_script:
     - pip install pipenv
@@ -107,7 +107,7 @@ release-docker-tag:
     - docker push $CI_APPLICATION_REPOSITORY:latest
 
 pages:
-  image: python:3
+  image: python:3.6
   stage: release
   only:
     - master
