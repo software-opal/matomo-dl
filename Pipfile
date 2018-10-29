@@ -11,11 +11,18 @@ cattrs = "*"
 python_version = "3.6"
 
 [dev-packages]
+bandit = "*"
 black = "*"
 flake8 = "*"
 flake8-bugbear = "*"
+flake8-builtins = "*"
+flake8-bandit = "*"
+flake8-comprehensions = "*"
+flake8-isort = "*"
+flake8-mypy = "*"
+flake8-pep3101 = "*"
+isort = "*"
 mypy = "*"
-bandit = "*"
 
 [pipenv]
 allow_prereleases = true

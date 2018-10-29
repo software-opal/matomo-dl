@@ -1,18 +1,16 @@
 import logging
 import re
 import typing as typ
-import zipfile
-from io import BytesIO
 from urllib.parse import urljoin
 
 import bs4
 import requests
 
-from . import get_extraction_root
-from ..distribution.lock import MatomoLock
-from ..distribution.version import Version
-from ..gpg import GpgVerifier, KeyImportError, VerificationError
-from ..session import SessionStore
+from matomo_dl.distribution.lock import MatomoLock
+from matomo_dl.distribution.version import Version
+from matomo_dl.lock import get_extraction_root
+from matomo_dl.gpg import GpgVerifier, KeyImportError, VerificationError
+from matomo_dl.session import SessionStore
 
 logger = logging.getLogger(__name__)
 API_URL = "https://api.matomo.org"
@@ -52,14 +50,14 @@ def get_matomo_version(
     r.raise_for_status()
     zip_file_sig = r.content
 
-    with GPGVerifier() as verifier:
+    with GpgVerifier() as verifier:
         try:
             verifier.load_fingerprint("0x814E346FA01A20DBB04B6807B5DBD5925590A237")
             verifier.verify(zip_file, zip_file_sig)
-        except KeyImportError as e:
+        except KeyImportError:
             logger.error("Unable to import the Matomo release keys.")
             raise
-        except VerificationError as e:
+        except VerificationError:
             logger.error("Signature does not match file.")
             raise
     return dl_url, zip_file

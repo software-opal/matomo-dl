@@ -1,10 +1,6 @@
 import functools
 import logging
-import re
 import typing as typ
-import zipfile
-from io import BytesIO
-from urllib.parse import urljoin
 
 import click
 import requests
@@ -72,7 +68,8 @@ def resolve_plugin_version_spec(
             return version
         else:
             logger.error(
-                "There are no versions of {name} that match the version specifier {version_spec}."
+                "There are no versions of {name} that "
+                "match the version specifier {version_spec}."
             )
             raise ValueError("No supported versions")
 
@@ -112,7 +109,8 @@ def get_all_plugin_versions(
         return None, filtered_versions
     elif latest_version not in filtered_versions:
         click.echo(
-            "The latest version of {name} is not supported on Matomo {matomo_version} and PHP {php_version}."
+            "The latest version of {name} is not supported on"
+            " Matomo {matomo_version} and PHP {php_version}."
         )
         return None, filtered_versions
     else:

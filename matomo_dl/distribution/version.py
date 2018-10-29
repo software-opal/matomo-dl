@@ -33,7 +33,7 @@ class Version:
 @attr.s
 class AnyVersion(Version):
     @property
-    def specifier(self):
+    def specifier(self) -> SpecifierSet:
         return SpecifierSet("")
 
 

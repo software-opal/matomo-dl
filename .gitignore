@@ -1,5 +1,11 @@
-*.egg-info
+__pycache__/
+.cache/
+.mypy_cache/
+.ropeproject/
+.venv/
+build/
+dist/
+*.egg-info/
 
-.cache
-.mypy_cache
-.ropeproject
+*.py[cod]
+*$py.class

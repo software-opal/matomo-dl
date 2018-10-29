@@ -96,3 +96,5 @@ def load_distribution_file(
 
 def write_distribution_file(dist_file: dist_file.DistributionFile) -> str:
     data = cattr.unstructure(dist_file)
+    print(data)
+    return ""

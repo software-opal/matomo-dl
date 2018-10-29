@@ -52,7 +52,7 @@ class GpgVerifier:
 
     def load_fingerprint(self, fingerprint: str):
         err = None
-        for attempt in range(3):
+        for _attempt in range(3):
             key_server = random.choice(list(self.keyservers))
             try:
                 self.gpg_call("--keyserver", key_server, "--recv-keys", fingerprint)
