@@ -1,10 +1,6 @@
-import json
-import os
-import pathlib
 import typing as typ
 
 import attr
-import cattr
 
 
 class Customisation:

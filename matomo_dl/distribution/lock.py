@@ -71,7 +71,7 @@ def unstringify_distribution_lock(dist_lock: str) -> typ.Optional[DistributionLo
             p_locks[plugin_name] = p_lock
         data.setdefault("distribution_hash", "")
         return DistributionLockFile(matomo=m_lock, plugin_locks=p_locks, **data)
-    except TypeError as e:
+    except TypeError:
         logger.warning("Failed to load lock file. Discarding contents")
         return None
 

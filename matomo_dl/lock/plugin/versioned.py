@@ -7,7 +7,7 @@ import requests
 from matomo_dl.distribution.lock import VersionedPluginLock
 from matomo_dl.distribution.version import Version, parse_version
 from matomo_dl.errors import VersionError
-from matomo_dl.lock import get_extraction_root
+from matomo_dl.lock import get_zip_extraction_root
 from matomo_dl.session import SessionStore
 
 logger = logging.getLogger(__name__)
@@ -34,9 +34,9 @@ def sync_versioned_plugin_lock(
     resp.raise_for_status()
     data = resp.content
 
-    base_path = get_extraction_root(data, "plugin.json")
+    base_path = get_zip_extraction_root(data, "plugin.json")
     if not base_path:
-        logger.error("Cannot determine how to extract Matomo!")
+        logger.error("Cannot determine how to extract plugin!")
         raise ValueError("Unable to determine path")
     hashes = session.store_cache_data(cache_key, data)
     return VersionedPluginLock(

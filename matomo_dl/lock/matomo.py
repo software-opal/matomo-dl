@@ -9,7 +9,7 @@ import requests
 from matomo_dl.distribution.lock import MatomoLock
 from matomo_dl.distribution.version import Version
 from matomo_dl.gpg import GpgVerifier, KeyImportError, VerificationError
-from matomo_dl.lock import get_extraction_root
+from matomo_dl.lock import get_zip_extraction_root
 from matomo_dl.session import SessionStore
 
 logger = logging.getLogger(__name__)
@@ -28,12 +28,14 @@ def sync_matomo_lock(
         return existing_lock
     cache_key = f"matomo-{version}-zip"
     url, data = get_matomo_version(session, version)
-    base_path = get_extraction_root(data, "piwik.php")
+    base_path = get_zip_extraction_root(data, "piwik.php")
     if not base_path:
         logger.error("Cannot determine how to extract Matomo!")
         raise ValueError("")
-    hash = session.store_cache_data(cache_key, data)
-    return MatomoLock(version=version, link=url, hash=hash, extraction_root=base_path)
+    data_hash = session.store_cache_data(cache_key, data)
+    return MatomoLock(
+        version=version, link=url, hash=data_hash, extraction_root=base_path
+    )
 
 
 def get_matomo_version(

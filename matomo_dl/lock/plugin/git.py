@@ -2,10 +2,10 @@ import logging
 import subprocess
 import tempfile
 import typing as typ
-from contextlib import ExitStack
-from hashlib import sha256
 
 from matomo_dl.distribution.lock import GitPluginLock
+from matomo_dl.errors import MatomoError
+from matomo_dl.lock import get_tar_extraction_root
 from matomo_dl.session import SessionStore
 
 logger = logging.getLogger(__name__)
@@ -30,11 +30,15 @@ def sync_git_plugin_lock(
     if not sha:
         # Ref may be missing; or the remote server isn't letting us archive a commit sha.
         sha, archive = get_plugin_using_clone(git_url, ref)
-    if sha:
-        archive_hash = session.store_cache_data(
-            f"git-plugin-{name}-{archive_sha}-tar", archive
+    if sha and archive:
+        base_path = get_tar_extraction_root(archive, "plugin.json")
+        if not base_path:
+            logger.error("Cannot determine how to extract plugin!")
+            raise ValueError("Unable to determine path")
+        archive_hash = session.store_cache_data(f"git-plugin-{name}-{sha}-tar", archive)
+        return GitPluginLock(
+            git=git_url, extraction_root=base_path, sha=sha, hash=archive_hash
         )
-        return GitPluginLock(git=git_url, sha=archive_sha, hash=archive_hash)
     else:
         logger.warning("Cannot retrieve {ref!r} fron {git_url!r}.")
         raise MatomoError("Cannot create an archive of {ref!r}. Does it exist?")
@@ -45,7 +49,7 @@ def get_plugin_using_archive(
 ) -> typ.Tuple[typ.Optional[str], typ.Optional[bytes]]:
     try:
         with tempfile.NamedTemporaryFile(suffix=".tar", mode="rb") as tarball:
-            archive_res = subprocess.run(
+            subprocess.run(
                 [
                     "git",
                     "archive",
@@ -99,7 +103,7 @@ def get_plugin_using_clone(
                 )
             sha = res.stdout.strip()
             with tempfile.NamedTemporaryFile(suffix=".tar", mode="rb") as tarball:
-                archive_res = subprocess.run(
+                subprocess.run(
                     [
                         "git",
                         "archive",

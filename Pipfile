@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 matomo-dl = {editable = true, path = "."}
-cattrs = "*"
 
 [requires]
 python_version = "3.6"
@@ -13,16 +12,14 @@ python_version = "3.6"
 [dev-packages]
 matomo-dl = {editable = true, extras = ["cache"], path = "."}
 
-"flake8-pyi" = "*"
-bandit = "*"
 black = "*"
 flake8 = "*"
-flake8-bandit = "*"
 flake8-bugbear = "*"
 flake8-builtins = "*"
 flake8-comprehensions = "*"
 flake8-isort = "*"
 flake8-pep3101 = "*"
+flake8-pyi = "*"
 isort = "*"
 mypy = "*"
 

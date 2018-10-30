@@ -1,8 +1,6 @@
 import logging
 import typing as typ
 
-import cattr
-
 from matomo_dl.distribution.file import DistributionFile
 from matomo_dl.distribution.lock import DistributionLockFile
 from matomo_dl.lock.matomo import sync_matomo_lock

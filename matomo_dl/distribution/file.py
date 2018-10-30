@@ -3,14 +3,13 @@ import os
 import pathlib
 import typing as typ
 from hashlib import sha256
-from typing import NewType
 
 import attr
 import cattr
 import toml
 
 from .customisations import Customisations
-from .version import AnyVersion, Version, parse_version
+from .version import AnyVersion, Version
 
 
 class Plugin:
@@ -44,12 +43,12 @@ class DistributionFile:
     version: Version = attr.ib()
     php_version: typ.Optional[str] = attr.ib(default=None)
     license_key: typ.Optional[str] = attr.ib(default=None)
-    plugins: typ.Mapping[str, Plugin] = attr.ib(default=dict)
-    customisation: Customisations = attr.ib(default=())
+    plugins: typ.Mapping[str, Plugin] = attr.ib(factory=dict)
+    customisation: Customisations = attr.ib(factory=Customisations)
 
-    @staticmethod
+    @classmethod
     def _normalise_license_key(
-        base_dir: typ.Optional[pathlib.Path], key: typ.Optional[str]
+        cls, base_dir: typ.Optional[pathlib.Path], key: typ.Optional[str]
     ) -> typ.Optional[str]:
         if key is None:
             return None
@@ -57,9 +56,13 @@ class DistributionFile:
         if not key:
             return None
         elif key[0] == "$":
-            return _normalise_license_key(base_dir, os.environ[key[1:]])
+            return cls._normalise_license_key(base_dir, os.environ[key[1:]])
         elif key[0] == "<":
-            return _normalise_license_key(base_dir, (base_dir / key[1:]).read_text())
+            if base_dir is None:
+                raise ValueError("Cannot normalise a file include without a base path")
+            return cls._normalise_license_key(
+                base_dir, (base_dir / key[1:]).read_text()
+            )
         else:
             return key
 
@@ -68,21 +71,17 @@ class DistributionFile:
 
     @property
     def versioning_hash(self) -> str:
-        return (
-            "sha256:"
-            + sha256(
-                json.dumps(
-                    {
-                        "version": cattr.unstructure(self.version),
-                        "php_version": cattr.unstructure(self.php_version),
-                        "plugins": cattr.unstructure(self.plugins),
-                    },
-                    indent=None,
-                    separators=(",", ":"),
-                    sort_keys=True,
-                ).encode("utf-8")
-            ).hexdigest()
+        versioning_json = json.dumps(
+            {
+                "version": cattr.unstructure(self.version),
+                "php_version": cattr.unstructure(self.php_version),
+                "plugins": cattr.unstructure(self.plugins),
+            },
+            indent=None,
+            separators=(",", ":"),
+            sort_keys=True,
         )
+        return "sha256:" + sha256(versioning_json.encode("utf-8")).hexdigest()
 
 
 def parse_plugin(value, _typ) -> Plugin:
@@ -102,8 +101,7 @@ def parse_plugin(value, _typ) -> Plugin:
         return GitPlugin(**value)
     elif "link" in value:
         return RawPlugin(**value)
-    else:
-        raise ValueError("Unsupported plugin type {value!r}")
+    raise ValueError("Unsupported plugin type {value!r}")
 
 
 cattr.register_structure_hook(Plugin, parse_plugin)
@@ -112,7 +110,8 @@ cattr.register_structure_hook(Plugin, parse_plugin)
 def unstringify_distribution_file(
     base_dir: pathlib.Path, file_content: str
 ) -> DistributionFile:
-    return cattr.structure(toml.loads(file_content), DistributionFile)
+    v: DistributionFile = cattr.structure(toml.loads(file_content), DistributionFile)
+    return v
 
 
 def stringify_distribution_file(dist_file: DistributionFile) -> str:
