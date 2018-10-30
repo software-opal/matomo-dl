@@ -1,3 +1,6 @@
+# This can contain the license key.
+distribution.norm.toml
+
 __pycache__/
 .cache/
 .mypy_cache/
