@@ -6,6 +6,7 @@ import requests
 
 from matomo_dl.distribution.lock import VersionedPluginLock
 from matomo_dl.distribution.version import Version, parse_version
+from matomo_dl.errors import VersionError
 from matomo_dl.lock import get_extraction_root
 from matomo_dl.session import SessionStore
 
@@ -56,7 +57,7 @@ def resolve_plugin_version_spec(
     )
     if not latest and not all_versions:
         logger.error(f"There are no versions of {name} that are supported.")
-        raise ValueError("No supported versions")
+        raise VersionError(f"No versions returned for {name}")
     elif latest and version_spec.choose_version([latest]):
         return latest, all_versions[latest]
     else:
@@ -68,7 +69,7 @@ def resolve_plugin_version_spec(
                 f"There are no versions of {name} that "
                 f"match the version specifier {version_spec}."
             )
-            raise ValueError("No supported versions")
+            raise VersionError(f"No matching versions for {name}")
 
 
 def get_all_plugin_versions(
@@ -86,6 +87,17 @@ def get_all_plugin_versions(
     resp.raise_for_status()
     data = resp.json()
     if not data.get("isDownloadable", False):
+        logger.warning(f"Cannot download {name!r} with current configuration.")
+        if data["isPaid"]:
+            if license_key:
+                logger.warning(
+                    f"The license key given('{license_key[:5]}...') is cannot "
+                    f"download the paid plugin {name!r}."
+                )
+            else:
+                logger.warning(
+                    f"You must specify a license key to download the paid plugin {name!r}."
+                )
         return (None, {})
     latest_version = data.get("latestVersion", None)
     all_versions = {}
@@ -103,12 +115,18 @@ def get_all_plugin_versions(
             if not php.choose_version([php_version]):
                 continue
         filtered_versions[version] = dl_url
+    if not filtered_versions:
+        logger.warning(
+            f"There are no versions of {name!r} supported on"
+            f" Matomo {matomo_version} and PHP {php_version}."
+        )
+        return (None, {})
     if latest_version not in all_versions:
         # A very bizar occurance
         return None, filtered_versions
     elif latest_version not in filtered_versions:
         logger.warning(
-            f"The latest version of {name} is not supported on"
+            f"The latest version of {name!r} is not supported on"
             f" Matomo {matomo_version} and PHP {php_version}."
         )
         return None, filtered_versions

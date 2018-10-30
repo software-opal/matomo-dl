@@ -37,7 +37,7 @@ class VersionedPluginLock(PluginLock):
 class GitPluginLock(PluginLock):
 
     git: str = attr.ib()
-    ref: str = attr.ib()
+    sha: str = attr.ib()
     hash: HashInfo = attr.ib()
 
 

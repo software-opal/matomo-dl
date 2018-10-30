@@ -9,6 +9,7 @@ from matomo_dl.distribution.load_save import (
     load_from_distribution_path,
     write_lockfile_using_distribution_path,
 )
+from matomo_dl.errors import MatomoError
 from matomo_dl.lock.general import build_lock
 from matomo_dl.session import (
     CACHE_LEVEL_NAMES,
@@ -68,7 +69,16 @@ def update(ctx, distribution_file):
     assert isinstance(session, SessionStore)
     distribution_file = pathlib.Path(distribution_file)
     dist, lock = load_from_distribution_path(distribution_file)
-    new_lock = build_lock(session, dist, lock)
+    try:
+        new_lock = build_lock(session, dist, lock)
+    except MatomoError as e:
+        click.echo(
+            "🛑 "
+            + click.style("Error: ", fg="red", bold=True)
+            + click.style(str(e), fg="red")
+            + " 🛑"
+        )
+        return ctx.exit(2)
     write_lockfile_using_distribution_path(distribution_file, new_lock)
     if new_lock != lock:
         click.secho("✨ Written lock file changes ✨", fg="green", bold=True)
@@ -89,13 +99,18 @@ def build(ctx, distribution_file):
     distribution_file = pathlib.Path(distribution_file)
     dist, lock = load_from_distribution_path(distribution_file)
     if lock.distribution_hash != dist.versioning_hash:
-        click.secho("⚠️ The distribution file has changed ⚠️", fg="yellow", bold=True)
+        click.secho("!!! The distribution file has changed !!!", fg="yellow", bold=True)
         click.echo("Cowardly refusing to build from an outdated lock file.")
+        click.echo("To resolve this:\n")
+        click.echo(" run " + click.style("$ matomo-dl update", bold=True))
+        click.echo("\n- or -\n")
+        click.echo(" change the `distribution_hash` in the lock file to")
         click.echo(
-            "To ignore this message, change `distribution_hash` in the lock file to"
+            '    distribution_hash = "'
+            + click.style(dist.versioning_hash, bold=True)
+            + '"\n'
         )
-        click.echo('\n  distribution_hash = "{dist.versioning_hash}"\n')
-        click.abort()
+        ctx.exit(1)
 
 
 if __name__ == "__main__":

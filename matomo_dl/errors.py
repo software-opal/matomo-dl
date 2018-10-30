@@ -1,0 +1,6 @@
+class MatomoError(Exception):
+    ...
+
+
+class VersionError(MatomoError):
+    ...

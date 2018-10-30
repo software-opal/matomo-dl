@@ -2,12 +2,11 @@
 version = "3.*"
 # version = "~=3.5"
 
-license_key = "abcdef..."
+# license_key = "abcdef..."
 # license_key = "$my_license_env"
 # license_key = "<./my_license_file"
 
 [plugins]
-"FlagCounter" = "*"
 # AbTesting = "*"
 # ActivityLog = "*"
 # CustomDimensions = "*"
@@ -25,9 +24,9 @@ license_key = "abcdef..."
 # UsersFlow = "*"
 IP2Location = "*"
 
-# [plugins.SiteCreationAutomation]
-# git = "https://gitlab.wgtn.cat-it.co.nz/elearning/SiteCreationAutomation.git"
-# ref = "dd931e27152ca385fe17f45c0458588c622671f8"
+[plugins.SiteCreationAutomation]
+git = "https://gitlab.wgtn.cat-it.co.nz/elearning/SiteCreationAutomation.git"
+ref = "master"
 
 [customisation.manifest]
 regenerate=true

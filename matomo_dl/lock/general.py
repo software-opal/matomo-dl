@@ -27,16 +27,17 @@ def build_lock(
     else:
         old_plugin_locks = {}
     plugin_locks = {}
-    for plugin in dist.plugins:
+    for name, plugin in dist.plugins.items():
         p_lock = sync_plugin_lock(
             session,
             dist.php_version or DEFAULT_ASSUMED_PHP_VERSION,
             matomo_lock.version,
             dist.license_key,
+            normalise_name(name),
             plugin,
-            old_plugin_locks.get(plugin.normalised_name),
+            old_plugin_locks.get(normalise_name(name)),
         )
-        plugin_locks[plugin.normalised_name] = p_lock
+        plugin_locks[normalise_name(name)] = p_lock
     return DistributionLockFile(
         matomo=matomo_lock,
         plugin_locks=plugin_locks,

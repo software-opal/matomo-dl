@@ -1,8 +1,8 @@
 import logging
 import pathlib
 import typing as typ
-from types import MappingProxyType
 from datetime import timedelta
+from types import MappingProxyType
 
 from .caching_store import CachingSessionStore
 from .store import SessionStore

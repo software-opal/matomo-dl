@@ -1,6 +1,7 @@
 import typing as typ
 
 import attr
+import cattr
 from packaging.specifiers import SpecifierSet
 
 
@@ -31,12 +32,18 @@ class Version:
         else:
             return matching[-1]
 
+    def __str__(self) -> str:
+        return str(self.specifier)
+
 
 @attr.s
 class AnyVersion(Version):
     @property
     def specifier(self) -> SpecifierSet:
         return SpecifierSet("")
+
+    def __str__(self) -> str:
+        return "*"
 
 
 @attr.s
@@ -55,6 +62,9 @@ class ExactVersion(Version):
     def specifier(self) -> SpecifierSet:
         return SpecifierSet(f"=={self.version}")
 
+    def __str__(self) -> str:
+        return self.version
+
 
 def parse_version(version: str) -> Version:
     version = version.strip()
@@ -72,4 +82,16 @@ def parse_version(version: str) -> Version:
     return DynamicVersion(spec_set)
 
 
-cattr.register_structure_hook(Version, parse_version)
+def cattr_parse_version(value, _typ) -> Version:
+    return parse_version(str(value))
+
+
+cattr.register_structure_hook(Version, cattr_parse_version)
+cattr.register_structure_hook(AnyVersion, cattr_parse_version)
+cattr.register_structure_hook(DynamicVersion, cattr_parse_version)
+cattr.register_structure_hook(ExactVersion, cattr_parse_version)
+
+cattr.register_unstructure_hook(Version, str)
+cattr.register_unstructure_hook(AnyVersion, str)
+cattr.register_unstructure_hook(DynamicVersion, str)
+cattr.register_unstructure_hook(ExactVersion, str)

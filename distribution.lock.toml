@@ -1,4 +1,4 @@
-distribution_hash = "sha256:36728c7304d07857d35f39d6d83c1d3596234e1c96912f6b76665b4acae2b929"
+distribution_hash = "sha256:54bb04ff247f36a398da58da703d52ceefd4ba9919d7b0a74004d7c6895eb30e"
 
 [matomo]
 version = "3.6.1"

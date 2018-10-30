@@ -19,6 +19,7 @@ def sync_plugin_lock(
     php_version: str,
     matomo_version: str,
     license_key: typ.Optional[str],
+    name: str,
     plugin: Plugin,
     existing_lock: typ.Optional[PluginLock],
 ) -> PluginLock:
@@ -30,7 +31,7 @@ def sync_plugin_lock(
             php_version,
             matomo_version,
             license_key,
-            plugin.normalised_name,
+            normalise_name(name),
             plugin.version,
             existing_lock,
         )
@@ -42,9 +43,9 @@ def sync_plugin_lock(
             php_version,
             matomo_version,
             license_key,
-            plugin.normalised_name,
+            normalise_name(name),
             plugin.git,
-            plugin.rev,
+            plugin.ref,
             existing_lock,
         )
     else:
