@@ -93,8 +93,6 @@ release-docker-master:
   only:
     refs:
       - master
-  tags:
-    - dind
   services:
     - docker:stable-dind
   before_script:
@@ -109,8 +107,6 @@ release-docker-tag:
   stage: release
   only:
     - tags
-  tags:
-    - dind
   services:
     - docker:stable-dind
   before_script:
@@ -141,8 +137,6 @@ container_scanning:
   image: docker:stable
   stage: gitlab-utils
   allow_failure: true
-  tags:
-    - dind
   services:
     - docker:stable-dind
   before_script:
@@ -166,8 +160,6 @@ sast:
   image: docker:stable
   stage: gitlab-utils
   allow_failure: true
-  tags:
-    - dind
   services:
     - docker:stable-dind
   script:
@@ -183,8 +175,6 @@ dependency_scanning:
   image: docker:stable
   stage: gitlab-utils
   allow_failure: true
-  tags:
-    - dind
   services:
     - docker:stable-dind
   script:
