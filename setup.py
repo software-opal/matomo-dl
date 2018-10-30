@@ -14,7 +14,7 @@ with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as f:
 
 
 with open(os.path.join(here, "matomo_dl", "__version__.py")) as v:
-    exec(v.read(), about)
+    exec(v.read(), about)  # noqa: S102
 
 
 required = [
@@ -48,7 +48,7 @@ setup(
     },
     python_requires=">=3.6",
     install_requires=required,
-    extras_require={},
+    extras_require={"cache": ["requests_cache==0.4.13"]},
     include_package_data=True,
     license="GPLv3+",
 )

@@ -14,6 +14,9 @@ version = "*"
 # version = "3.*"
 # version = "~=3.5"
 
+php = "7.0"
+# php = "5.3"
+
 license_key = "abcdef..."
 # license_key = "$my_license_env"
 # license_key = "<./my_license_file"

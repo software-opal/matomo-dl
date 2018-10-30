@@ -11,15 +11,17 @@ cattrs = "*"
 python_version = "3.6"
 
 [dev-packages]
+matomo-dl = {editable = true, extras = ["cache"], path = "."}
+
+"flake8-pyi" = "*"
 bandit = "*"
 black = "*"
 flake8 = "*"
+flake8-bandit = "*"
 flake8-bugbear = "*"
 flake8-builtins = "*"
-flake8-bandit = "*"
 flake8-comprehensions = "*"
 flake8-isort = "*"
-flake8-mypy = "*"
 flake8-pep3101 = "*"
 isort = "*"
 mypy = "*"

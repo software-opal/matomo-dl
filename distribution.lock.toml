@@ -1,0 +1,19 @@
+distribution_hash = "sha256:36728c7304d07857d35f39d6d83c1d3596234e1c96912f6b76665b4acae2b929"
+
+[matomo]
+version = "3.6.1"
+link = "https://builds.matomo.org/matomo-3.6.1.zip"
+hash = "sha256:76b0e92662a8e4f80b2722aedc9ae1afbd54340ce8a3895576bc96d745ffe47d"
+extraction_root = "piwik.php"
+
+[plugin_locks.flagcounter]
+extraction_root = "plugin.json"
+version = "3.0.3"
+link = "https://plugins.matomo.org/api/2.0/plugins/FlagCounter/download/3.0.3"
+hash = "sha256:dff121bb0da5c07945862575edd1f71e14a7f2939217afbb4063f20685cafbc7"
+
+[plugin_locks.ip2location]
+extraction_root = "plugin.json"
+version = "3.1.8"
+link = "https://plugins.matomo.org/api/2.0/plugins/IP2Location/download/3.1.8"
+hash = "sha256:650e51b76c3ee4119cb96fc20f152c031919e7400ae08e7ff17288e5903270c0"

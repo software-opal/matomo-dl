@@ -1,5 +1,5 @@
 import random
-import subprocess
+import subprocess  # noqa: S404 -- subprocess usage is safe
 import tempfile
 import typing as typ
 
@@ -28,9 +28,9 @@ class GpgVerifier:
             self.tmp_folder.__enter__()
         return self
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, ex_type, value, traceback):
         if self.tmp_folder is not None:
-            self.tmp_folder.__exit__(type, value, traceback)
+            self.tmp_folder.__exit__(ex_type, value, traceback)
         self.tmp_folder = None
 
     def get_tmp_folder(self) -> str:
@@ -48,12 +48,16 @@ class GpgVerifier:
             self.get_tmp_folder(),
         ) + args
         kwargs.setdefault("input", "")
-        return subprocess.run(args, check=check, **kwargs)
+        return subprocess.run(  # noqa: S603 -- assume callers are safe
+            args, check=check, **kwargs
+        )
 
     def load_fingerprint(self, fingerprint: str):
         err = None
         for _attempt in range(3):
-            key_server = random.choice(list(self.keyservers))
+            key_server = random.choice(  # noqa: S311 -- psuedo-random is fine
+                list(self.keyservers)
+            )
             try:
                 self.gpg_call("--keyserver", key_server, "--recv-keys", fingerprint)
                 return
