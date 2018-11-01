@@ -13,9 +13,7 @@ from .version import AnyVersion, Version
 
 
 class Plugin:
-    @staticmethod
-    def to_normalised_name(name: str) -> str:
-        return name.strip().lower()
+    pass
 
 
 @attr.s
@@ -111,6 +109,7 @@ def unstringify_distribution_file(
     base_dir: pathlib.Path, file_content: str
 ) -> DistributionFile:
     v: DistributionFile = cattr.structure(toml.loads(file_content), DistributionFile)
+    v.normalise_license_key(base_dir)
     return v
 
 

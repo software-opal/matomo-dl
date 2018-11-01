@@ -121,6 +121,7 @@ release-docker-tag:
 pages:
   image: python:3.6
   stage: release
+  allow_failure: true
   only:
     - master
   script:

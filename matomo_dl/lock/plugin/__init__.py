@@ -9,10 +9,6 @@ from .versioned import sync_versioned_plugin_lock
 
 logger = logging.getLogger(__name__)
 
-normalise_name = (  # noqa: F841 -- Exported here for convenience
-    Plugin.to_normalised_name
-)
-
 
 def sync_plugin_lock(
     session: SessionStore,
@@ -31,7 +27,7 @@ def sync_plugin_lock(
             php_version,
             matomo_version,
             license_key,
-            normalise_name(name),
+            name,
             plugin.version,
             existing_lock,
         )
@@ -43,7 +39,7 @@ def sync_plugin_lock(
             php_version,
             matomo_version,
             license_key,
-            normalise_name(name),
+            name,
             plugin.git,
             plugin.ref,
             existing_lock,

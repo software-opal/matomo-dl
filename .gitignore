@@ -1,12 +1,14 @@
 # This can contain the license key.
 distribution.norm.toml
+license_key.txt
+*.tar.gz
 
 __pycache__/
 .cache/
 .mypy_cache/
 .ropeproject/
 .venv/
-build/
+/build/
 dist/
 *.egg-info/
 

@@ -5,7 +5,7 @@ import typing as typ
 import requests
 from requests.adapters import HTTPAdapter
 
-from matomo_dl.hashing import HashInfo, all_hashes_for_data, hashes_for_data
+from matomo_dl.hashing import HashInfo, all_hashes_for_data
 
 
 class HttpLoggingAdapter(HTTPAdapter):
@@ -43,31 +43,22 @@ class SessionStore(requests.Session):
         return hashes
 
     def retrieve_cache_data(
-        self, cache_key: str, expected_hashes: typ.Mapping[str, str]
-    ) -> typ.Tuple[typ.Optional[bytes], typ.Optional[HashInfo]]:
+        self, cache_key: str, expected_hash: HashInfo
+    ) -> typ.Optional[bytes]:
         if not self.cache_dir:
-            return None, None
+            return None
         assert re.match(r"^[0-9a-z\-_.]+$", cache_key)
-        assert expected_hashes
+        assert expected_hash
         file = self.cache_dir / "{}.dat".format(cache_key)
         hash_file = self.cache_dir / "{}.dat.check".format(cache_key)
         if not file.exists() or not hash_file.exists():
-            return None, None
-        digests = {}
-        for hash_line in hash_file.read_text().splitlines():
-            algo, _, digest = hash_line.rpartition(":")
-            if digest:
-                digests[algo] = digest
-        has_match = False
-        for algo, digest in digests:
-            if expected_hashes.get(algo) == digest:
-                has_match = True
-                break
-        if has_match:
+            return None
+        digests = hash_file.read_text().splitlines()
+        if expected_hash in digests:
             data = file.read_bytes()
-            for algo, digest in hashes_for_data(data):
-                if expected_hashes.get(algo) == digest:
-                    return data, all_hashes_for_data(data)
+            if expected_hash == all_hashes_for_data(data):
+                return data
+
         file.unlink()
         hash_file.unlink()
-        return None, None
+        return None

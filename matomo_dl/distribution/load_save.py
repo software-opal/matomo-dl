@@ -32,8 +32,10 @@ def load_from_distribution_path(
     normfile_path_from_distribution(distribution_file).write_text(
         stringify_distribution_file(dist)
     )
-
-    lock = unstringify_distribution_lock(distribution_lockfile.read_text())
+    try:
+        lock = unstringify_distribution_lock(distribution_lockfile.read_text())
+    except Exception:
+        lock = None
     return dist, lock
 
 

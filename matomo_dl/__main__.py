@@ -5,6 +5,7 @@ import click
 import click_log
 
 from matomo_dl import __version__
+from matomo_dl.bundle import build_release
 from matomo_dl.distribution.load_save import (
     load_from_distribution_path,
     write_lockfile_using_distribution_path,
@@ -87,13 +88,20 @@ def update(ctx, distribution_file):
 
 
 @cli.command()
+@click.option(
+    "--output",
+    "-o",
+    "output_file",
+    default="./matomo.tar.gz",
+    type=click.Path(exists=False, resolve_path=True, dir_okay=False),
+)
 @click.argument(
     "distribution_file",
     default="./distribution.toml",
     type=click.Path(exists=True, resolve_path=True, dir_okay=False),
 )
 @click.pass_context
-def build(ctx, distribution_file):
+def build(ctx, distribution_file, output_file):
     session = ctx.obj["session"]
     assert isinstance(session, SessionStore)
     distribution_file = pathlib.Path(distribution_file)
@@ -111,6 +119,17 @@ def build(ctx, distribution_file):
             + '"\n'
         )
         ctx.exit(1)
+    try:
+        build_release(session, dist, lock, pathlib.Path(output_file))
+        click.secho("✨ Built matomo ✨", fg="green")
+    except MatomoError as e:
+        click.echo(
+            "🛑 "
+            + click.style("Error: ", fg="red", bold=True)
+            + click.style(str(e), fg="red")
+            + " 🛑"
+        )
+        return ctx.exit(2)
 
 
 if __name__ == "__main__":

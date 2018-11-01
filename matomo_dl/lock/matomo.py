@@ -18,6 +18,10 @@ BUILDS_URL = "https://builds.matomo.org"
 VERSION_REGEX = re.compile(r".*\/matomo-([0-9]+.*)\.((?:zip|tar\.gz)(?:\.asc)?)$")
 
 
+def get_cache_key(version: str) -> str:
+    return f"matomo-{version}-zip"
+
+
 def sync_matomo_lock(
     session: SessionStore,
     version_spec: Version,
@@ -26,7 +30,7 @@ def sync_matomo_lock(
     version = resolve_matomo_version_spec(session, version_spec)
     if existing_lock and version == existing_lock.version:
         return existing_lock
-    cache_key = f"matomo-{version}-zip"
+    cache_key = get_cache_key(version)
     url, data = get_matomo_version(session, version)
     base_path = get_zip_extraction_root(data, "piwik.php")
     if not base_path:
