@@ -37,10 +37,6 @@ example_plugins=true
 vendored_extras=true
 documentation=true
 build_support=true
-tests=true
-git_support=true
-marketplace = true
-professional_services = true
 
 [customisation.update]
 cacert=true

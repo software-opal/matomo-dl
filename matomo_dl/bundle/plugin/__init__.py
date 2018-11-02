@@ -1,8 +1,6 @@
 import logging
 import typing as typ
 
-import click
-
 from matomo_dl.bundle.extract import extract_zip_file
 from matomo_dl.bundle.info import BuildInformation
 from matomo_dl.distribution.lock import VersionedPluginLock

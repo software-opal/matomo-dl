@@ -3,6 +3,7 @@ import pathlib
 import tarfile
 import tempfile
 import typing as typ
+import gzip
 from contextlib import ExitStack
 
 import toml
@@ -64,6 +65,17 @@ def create_release_tarball(build: BuildInformation, output_file: pathlib.Path):
         bar = stack.enter_context(progressbar(length=3, label="Creating archive"))
         if output_file.suffix == ".tar":
             file = stack.enter_context(tarfile.open(output_file, mode="w"))
+        elif output_file.suffix == ".gz":
+            output_fd = gzip.GzipFile(
+                filename="",
+                mode="wb",
+                compresslevel=9,
+                mtime=build.mtime_clamp,
+                fileobj=stack.enter_context(output_file.open("wb")),
+            )
+            file = stack.enter_context(
+                tarfile.open(fileobj=stack.enter_context(output_fd), mode="w")
+            )
         else:
             if output_file.suffix in [".gz", ".xz"]:
                 mode = "w:" + output_file.suffix[1:]

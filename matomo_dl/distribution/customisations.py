@@ -2,8 +2,7 @@ import typing as typ
 
 import attr
 
-from matomo_dl.bundle.customisation import CustomisationCollection
-from matomo_dl.bundle.customisation.manifest import regenerate_manifest
+from matomo_dl.bundle.customisation import CustomisationCollection, manifest, remove
 from matomo_dl.call_tree import OrderedCall
 
 oc_from_c = OrderedCall.from_callable
@@ -31,44 +30,36 @@ class ManifestCustomisation(Customisation):
 
     def get_customisation_functions(self) -> CustomisationCollection:
         return filter_customisations(
-            (self.regenerate, oc_from_c(regenerate_manifest, requires=["ALL"]))
+            (self.regenerate, oc_from_c(manifest.regenerate_manifest, requires=["ALL"]))
         )
 
 
 @attr.s
 class RemoveCustomisation(Customisation):
 
+    build_support: bool = attr.ib()
+    documentation: bool = attr.ib()
     example_plugins: bool = attr.ib()
     vendored_extras: bool = attr.ib()
-    documentation: bool = attr.ib()
-    build_support: bool = attr.ib()
-    tests: bool = attr.ib()
-    git_support: bool = attr.ib()
-    marketplace: bool = attr.ib()
-    professional_services: bool = attr.ib()
 
     def get_customisation_functions(self) -> CustomisationCollection:
         return filter_customisations(
-            # (self.documentation, oc_from_c(remove_documentation, affects=["FILES"])),
-            # (self.build_support, oc_from_c(remove_build_support, affects=["FILES"])),
-            # (self.tests, oc_from_c(remove_tests, affects=["FILES"])),
-            # (self.git_support, oc_from_c(remove_git_support, affects=["FILES"])),
-            # (
-            #     self.example_plugins,
-            #     oc_from_c(remove_example_plugins, affects=["FILES", "PLUGINS"]),
-            # ),
-            # (
-            #     self.vendored_extras,
-            #     oc_from_c(remove_vendored_extras, affects=["FILES"]),
-            # ),
-            # (
-            #     self.marketplace,
-            #     oc_from_c(remove_marketplace, affects=["FILES", "PLUGINS"]),
-            # ),
-            # (
-            #     self.professional_services,
-            #     oc_from_c(remove_professional_services, affects=["FILES", "PLUGINS"]),
-            # ),
+            (
+                self.build_support,
+                oc_from_c(remove.remove_build_support, affects=["FILES"]),
+            ),
+            (
+                self.documentation,
+                oc_from_c(remove.remove_documentation, affects=["FILES"]),
+            ),
+            (
+                self.example_plugins,
+                oc_from_c(remove.remove_example_plugins, affects=["FILES"]),
+            ),
+            (
+                self.vendored_extras,
+                oc_from_c(remove.remove_vendored_extras, affects=["FILES"]),
+            ),
         )
 
 
@@ -76,6 +67,8 @@ class RemoveCustomisation(Customisation):
 class UpdateCustomisation(Customisation):
 
     cacert: bool = attr.ib()
+
+    # piwik_professional_support_ads_enabled
 
     def get_customisation_functions(self) -> CustomisationCollection:
         return filter_customisations()

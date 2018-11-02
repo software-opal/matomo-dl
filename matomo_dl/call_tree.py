@@ -54,13 +54,13 @@ class OrderedCall(typ.Generic[T]):
 def order_calls_by_dependencies(
     data: typ.Collection[OrderedCall]
 ) -> typ.Sequence[OrderedCall]:
-    tree_inputs = {}
+    tree_inputs: typ.Dict[str, OrderedCall] = {}
     for call in data:
         if call.name in tree_inputs:
             raise ValueError("Cannot add calls with the same name twice")
         tree_inputs[call.name] = call
 
-    requires_set = {}
+    requires_set: typ.Dict[str, typ.Set[str]] = {}
     for name, call in tree_inputs.items():
         assert call.requires.issubset(tree_inputs.keys())
         assert call.affects.issubset(tree_inputs.keys())

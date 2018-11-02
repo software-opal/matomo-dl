@@ -59,3 +59,17 @@ class BuildInformation:
         data: typ.Dict[str, typ.Any] = cattr.unstructure(self)
         del data["folder"]
         return data
+
+    def add_removed_files(self, files: typ.Iterable[typ.Union[pathlib.Path, str]]):
+        clean_files: typ.Set[str] = set()
+        if "removed_files" in self.extra_info:
+            clean_files.update(self.extra_info["removed_files"])
+        for file in files:
+            if isinstance(file, pathlib.Path):
+                if file.is_absolute():
+                    clean_files.add(str(file.relative_to(self.folder)))
+                else:
+                    clean_files.add(str(file))
+            else:
+                clean_files.add(str(file))
+        self.extra_info["removed_files"] = sorted(clean_files)

@@ -2,6 +2,7 @@
 distribution.norm.toml
 license_key.txt
 *.tar.gz
+matomo_tmp/
 
 __pycache__/
 .cache/

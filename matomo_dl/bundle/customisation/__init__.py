@@ -1,9 +1,6 @@
 import logging
 import typing as typ
 
-import attr
-import click
-
 from matomo_dl.bundle.info import BuildInformation
 from matomo_dl.call_tree import OrderedCall, order_calls_by_dependencies
 from matomo_dl.progress import progressbar
@@ -15,7 +12,7 @@ CustomisationCallable = typ.Callable[[BuildInformation], None]
 CustomisationCollection = typ.Collection[OrderedCall]
 
 
-BASE_CALLS = frozenset(
+BASE_CALLS: typ.FrozenSet[OrderedCall] = frozenset(
     {
         OrderedCall("ALL", requires=["CONFIG", "PLUGINS", "FILES"]),
         OrderedCall("CONFIG", requires=["PLUGINS"]),

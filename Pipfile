@@ -11,7 +11,6 @@ python_version = "3.6"
 
 [dev-packages]
 matomo-dl = {editable = true, extras = ["cache"], path = "."}
-
 black = "*"
 flake8 = "*"
 flake8-bugbear = "*"
@@ -22,6 +21,7 @@ flake8-pep3101 = "*"
 flake8-pyi = "*"
 isort = "*"
 mypy = "*"
+diffoscope = "*"
 
 [pipenv]
 allow_prereleases = true

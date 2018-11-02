@@ -7,8 +7,6 @@ from contextlib import ExitStack
 from datetime import datetime
 from io import BytesIO
 
-import click
-
 from matomo_dl.progress import progressbar
 from .stat import is_extended_mode_dir, standardise_privacy_mode
 
