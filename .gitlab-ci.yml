@@ -86,6 +86,29 @@ isort:
   script:
     - pipenv run isort --check-only -r .
 
+reproducable-builds:
+  image: python:3.6
+  stage: test
+  before_script:
+    - pip install pipenv
+    - pipenv install --dev
+    - pipenv clean
+  script:
+    - rm -r .test-cache tests/reproducable.lock.toml
+    - pipenv run matomo-dl --cache=./.test-cache update tests/reproducable.toml
+    - cp tests/reproducable.lock.toml .test-cache/
+    - pipenv run matomo-dl --cache=./.test-cache build tests/reproducable.toml ./.test-cache/reproducable-1.tar.gz
+    - pipenv run matomo-dl --cache=./.test-cache build tests/reproducable.toml ./.test-cache/reproducable-2.tar.gz
+    # Diffoscope is like diff on steroids.
+    - pipenv run diffoscope --text-color=always --text --output-empty ./.test-cache/reproducable-{1,2}.tar.gz
+    # Test that it works even without a cache
+    - pipenv run matomo-dl --cache-level=none    build tests/reproducable.toml ./.test-cache/reproducable-3.tar.gz
+    - pipenv run diffoscope --text-color=always --text --output-empty ./.test-cache/reproducable-{2,3}.tar.gz
+  artifacts:
+    paths:
+      - .test-cache
+    expire_in: 1 day
+
 
 release-docker-master:
   image: docker:stable

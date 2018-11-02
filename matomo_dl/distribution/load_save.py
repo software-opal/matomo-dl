@@ -1,8 +1,11 @@
 import pathlib
 import typing as typ
 
+import click
+
 from matomo_dl.distribution.file import DistributionFile
 from matomo_dl.distribution.lock import DistributionLockFile
+from matomo_dl.colored_diff import ColoredDiffer
 from .file import stringify_distribution_file, unstringify_distribution_file
 from .lock import stringify_distribution_lock, unstringify_distribution_lock
 
@@ -44,3 +47,24 @@ def write_lockfile_using_distribution_path(
 ):
     distribution_lockfile = lockfile_path_from_distribution(distribution_file)
     distribution_lockfile.write_text(stringify_distribution_lock(locks))
+
+
+def diff_lockfiles(old: DistributionLockFile, new: DistributionLockFile, quieter=False):
+    if old == new:
+        if not quieter:
+            click.secho("No changes")
+        return
+    old_txt = stringify_distribution_lock(old)
+    new_txt = stringify_distribution_lock(new)
+    # We should have a diff at this point; if old != new and old_txt == new_txt then we have a bug
+    assert old_txt != new_txt
+    if old.distribution_hash != new.distribution_hash:
+        if not quieter:
+            click.secho(
+                "# Note: these files were built from different distribution configurations",
+                dim=True,
+            )
+    click.secho("--- Old")
+    click.secho("+++ New")
+    for line in ColoredDiffer().compare(old_txt, new_txt):
+        click.echo(line)

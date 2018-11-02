@@ -1,0 +1,15 @@
+version = "3.6.1"
+
+[plugins]
+InvalidateReports = "0.1.1"
+LoginFailLog = "0.1.1"
+ForceSSL = "3.0.2"
+
+[customisation.manifest]
+regenerate=true
+
+[customisation.remove]
+example_plugins=true
+vendored_extras=true
+documentation=true
+build_support=true

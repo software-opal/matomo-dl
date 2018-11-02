@@ -7,6 +7,7 @@ import click_log
 from matomo_dl import __version__
 from matomo_dl.bundle import build_release
 from matomo_dl.distribution.load_save import (
+    diff_lockfiles,
     load_from_distribution_path,
     write_lockfile_using_distribution_path,
 )
@@ -59,13 +60,15 @@ def cli(ctx, cache_dir: str, cache_level: str, cache_clear: bool):
 
 
 @cli.command()
+@click.option("--diff/--no-diff", "-d/ ", "diff", default=True)
+@click.option("--dry", "dry", default=False, is_flag=True)
 @click.argument(
     "distribution_file",
     default="./distribution.toml",
     type=click.Path(exists=True, resolve_path=True, dir_okay=False),
 )
 @click.pass_context
-def update(ctx, distribution_file):
+def update(ctx, distribution_file, dry, diff):
     session = ctx.obj["session"]
     assert isinstance(session, SessionStore)
     distribution_file = pathlib.Path(distribution_file)
@@ -80,14 +83,27 @@ def update(ctx, distribution_file):
             + " 🛑"
         )
         return ctx.exit(2)
-    write_lockfile_using_distribution_path(distribution_file, new_lock)
     if new_lock != lock:
-        click.secho("✨ Written lock file changes ✨", fg="green", bold=True)
+        if diff:
+            diff_lockfiles(lock, new_lock)
+        if dry:
+            click.secho("! File has changes !")
+            if not diff:
+                click.secho("Run with '--diff' to see the changes")
+        else:
+            write_lockfile_using_distribution_path(distribution_file, new_lock)
+            click.secho("✨ Written lock file changes ✨", fg="green", bold=True)
     else:
         click.secho("✨ Already up to date ✨", fg="green")
 
 
 @cli.command()
+@click.option(
+    "--fail-if-updates/--no-fail-if-updates", "-f/ ", "fail_if_updates", default=False
+)
+@click.option(
+    "--update/--no-update", "--sync/ ", "-u/-U", "update_locks", default=False
+)
 @click.option(
     "--output",
     "-o",
@@ -101,33 +117,36 @@ def update(ctx, distribution_file):
     type=click.Path(exists=True, resolve_path=True, dir_okay=False),
 )
 @click.pass_context
-def build(ctx, distribution_file, output_file):
+def build(ctx, distribution_file, output_file, update_locks, fail_if_updates):
+    update_kws = {}
+    if update_locks is True:
+        update_kws["diff"] = True
+        update_kws["dry"] = False
+    if fail_if_updates is True:
+        update_kws["diff"] = True
+        update_kws["dry"] = True
+    if update_kws:
+        click.secho("🔄 Checking for updates before building 🔄")
+        ctx.invoke(update, distribution_file=distribution_file, **update_kws)
+
     session = ctx.obj["session"]
     assert isinstance(session, SessionStore)
     distribution_file = pathlib.Path(distribution_file)
     dist, lock = load_from_distribution_path(distribution_file)
     if lock.distribution_hash != dist.versioning_hash:
-        click.secho("!!! The distribution file has changed !!!", fg="yellow", bold=True)
+        click.secho("⛔ The distribution file has changed ⛔", fg="yellow", bold=True)
         click.echo("Cowardly refusing to build from an outdated lock file.")
-        click.echo("To resolve this:\n")
-        click.echo(" run " + click.style("$ matomo-dl update", bold=True))
-        click.echo("\n- or -\n")
-        click.echo(" change the `distribution_hash` in the lock file to")
-        click.echo(
-            '    distribution_hash = "'
-            + click.style(dist.versioning_hash, bold=True)
-            + '"\n'
-        )
+        click.echo("Add '--sync' to perform an update.")
         ctx.exit(1)
     try:
         build_release(session, dist, lock, pathlib.Path(output_file))
-        click.secho("✨ Built matomo ✨", fg="green")
+        click.secho("🎉 Built your distribution 🎉", fg="green")
     except MatomoError as e:
         click.echo(
-            "🛑 "
+            "💥 "
             + click.style("Error: ", fg="red", bold=True)
             + click.style(str(e), fg="red")
-            + " 🛑"
+            + " 💥"
         )
         return ctx.exit(2)
 
@@ -135,6 +154,5 @@ def build(ctx, distribution_file, output_file):
 if __name__ == "__main__":
     cli(
         auto_envvar_prefix="MATOMO_DL",
-        allow_interspersed_args=True,
         token_normalize_func=lambda s: str(s).strip().lower(),
     )

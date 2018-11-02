@@ -77,5 +77,4 @@ def unstringify_distribution_lock(dist_lock: str) -> typ.Optional[DistributionLo
 
 
 def stringify_distribution_lock(dist_lock: DistributionLockFile) -> str:
-    print(dist_lock)
     return toml.dumps(cattr.unstructure(dist_lock))
