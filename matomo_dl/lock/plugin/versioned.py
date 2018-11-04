@@ -21,7 +21,7 @@ def get_cache_key(name: str, version: str) -> str:
 
 def sync_versioned_plugin_lock(
     session: SessionStore,
-    php_version: str,
+    php_version: typ.Optional[str],
     matomo_version: str,
     license_key: typ.Optional[str],
     name: str,
@@ -51,7 +51,7 @@ def sync_versioned_plugin_lock(
 
 def resolve_plugin_version_spec(
     session: requests.Session,
-    php_version: str,
+    php_version: typ.Optional[str],
     matomo_version: str,
     license_key: typ.Optional[str],
     version_spec: Version,

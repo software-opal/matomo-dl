@@ -5,9 +5,8 @@ from matomo_dl.distribution.file import DistributionFile
 from matomo_dl.distribution.lock import DistributionLockFile
 from matomo_dl.lock.matomo import sync_matomo_lock
 from matomo_dl.lock.plugin import sync_plugin_lock
-from matomo_dl.session import SessionStore
 from matomo_dl.progress import progressbar
-
+from matomo_dl.session import SessionStore
 
 logger = logging.getLogger(__name__)
 DEFAULT_ASSUMED_PHP_VERSION = "7.2"

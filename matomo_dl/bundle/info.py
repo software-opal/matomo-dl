@@ -39,7 +39,7 @@ def get_build_mtime(default: typ.Optional[int] = None) -> int:
 class BuildInformation:
 
     lockfile: DistributionLockFile = attr.ib()
-    customisations: "matomo_dl.distribution.customisations.Customisations" = attr.ib()
+    customisations: "Customisations" = attr.ib()
     folder: pathlib.Path = attr.ib()
     extra_info: typ.Dict[str, typ.Any] = attr.ib(factory=dict)
     mtime_clamp: int = attr.ib(factory=get_build_mtime)
@@ -73,3 +73,10 @@ class BuildInformation:
             else:
                 clean_files.add(str(file))
         self.extra_info["removed_files"] = sorted(clean_files)
+
+
+if typ.TYPE_CHECKING:
+    # At the end to avoid a recursive import
+    from matomo_dl.distribution.customisations import Customisations
+else:
+    Customisations = None

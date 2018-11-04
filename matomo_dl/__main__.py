@@ -44,7 +44,7 @@ cache_level_choices = sorted(
 @click.option(
     "--cache-level",
     "cache_level",
-    default=DEFAULT_CACHE_LEVEL,
+    default=str(DEFAULT_CACHE_LEVEL),
     type=click.Choice(cache_level_choices),
     show_envvar=True,
 )

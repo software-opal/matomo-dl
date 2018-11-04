@@ -1,5 +1,6 @@
 import logging
 import pathlib
+import typing as typ
 from collections import defaultdict
 from hashlib import md5
 from types import SimpleNamespace
@@ -11,14 +12,14 @@ logger = logging.getLogger(__name__)
 
 
 def list_duplicates(build: BuildInformation) -> None:
-    files_by_size = defaultdict(set)
+    files_by_size: typ.Dict[int, typ.Set[pathlib.Path]] = defaultdict(set)
     for file in iter_tree(build.folder):
         if file.is_file():
             files_by_size[file.stat().st_size].add(file)
     for size, file_group in files_by_size.items():
         if size == 0 or len(file_group) < 2:
             continue
-        files_by_hash = defaultdict(set)
+        files_by_hash: typ.Dict[str, typ.Set[pathlib.Path]] = defaultdict(set)
         for file in file_group:
             files_by_hash[md5(file.read_bytes()).hexdigest()].add(file)
         for matching_files in files_by_hash.values():
@@ -31,4 +32,4 @@ def list_duplicates(build: BuildInformation) -> None:
 if __name__ == "__main__":
     d = SimpleNamespace()
     d.folder = pathlib.Path(".")
-    list_duplicates(d)
+    list_duplicates(d)  # type: ignore

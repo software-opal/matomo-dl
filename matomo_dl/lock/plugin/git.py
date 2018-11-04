@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def sync_git_plugin_lock(
     session: SessionStore,
-    php_version: str,
+    php_version: typ.Optional[str],
     matomo_version: str,
     license_key: typ.Optional[str],
     name: str,

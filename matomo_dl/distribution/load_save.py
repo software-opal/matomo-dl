@@ -3,9 +3,9 @@ import typing as typ
 
 import click
 
+from matomo_dl.colored_diff import ColoredDiffer
 from matomo_dl.distribution.file import DistributionFile
 from matomo_dl.distribution.lock import DistributionLockFile
-from matomo_dl.colored_diff import ColoredDiffer
 from .file import stringify_distribution_file, unstringify_distribution_file
 from .lock import stringify_distribution_lock, unstringify_distribution_lock
 

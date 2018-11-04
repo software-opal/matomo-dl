@@ -25,7 +25,7 @@ def get_path_regex(
     names: typ.Iterable[str] = (),
     stems: typ.Iterable[str] = (),
     extensions: typ.Iterable[str] = (),
-) -> typ.re.Pattern:
+) -> typ.Pattern:
     names_re = or_regex(map(re.escape, names))
     stems_re = or_regex(map(re.escape, stems))
     extensions_re = or_regex(map(re.escape, extensions))
@@ -56,7 +56,7 @@ def or_regex(res: typ.Iterable[str]) -> typ.Optional[str]:
 
 
 def iter_all_matching(
-    path: pathlib.Path, pattern: typ.re.Pattern
+    path: pathlib.Path, pattern: typ.Pattern
 ) -> typ.Iterator[pathlib.Path]:
     return filter(lambda path: pattern.match(str(path)), iter_tree(path))
 

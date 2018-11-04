@@ -1,13 +1,13 @@
 import difflib
 import functools
 import itertools
+import typing as typ
 
-import attr
 import click
 
 
 class ColoredDiffer(difflib.Differ):
-    def __init__(self, *a, **k):
+    def __init__(self, *a, **k) -> None:
         super().__init__(*a, **k)
         self.line_diff_styles = {
             " ": functools.partial(click.style, dim=True),
@@ -21,13 +21,13 @@ class ColoredDiffer(difflib.Differ):
             "^": functools.partial(click.style, bold=True),
         }
 
-    def colorise(self, line):
+    def colorise(self, line: str) -> str:
         line = line.rstrip("\n")
         styling = self.line_diff_styles[line[0]]
         tag = styling(line[0], bold=True)
         return f"{tag}{styling(line[1:])}"
 
-    def colorise_char_diff(self, line, diff):
+    def colorise_char_diff(self, line: str, diff: str) -> typ.Iterator[str]:
         line = line.rstrip("\n")
         diff = diff.rstrip("\n")
         styling = self.line_diff_styles[line[0]]
@@ -48,14 +48,20 @@ class ColoredDiffer(difflib.Differ):
         yield out
         # yield diff
 
-    def compare(self, a, b):
+    def compare(
+        self, a: typ.Union[str, typ.Sequence[str]], b: typ.Union[str, typ.Sequence[str]]
+    ) -> typ.Iterator[str]:
         if isinstance(a, str):
-            a = a.splitlines(keepends=True)
+            a_seq: typ.Sequence[str] = a.splitlines(keepends=True)
+        else:
+            a_seq = a
         if isinstance(b, str):
-            b = b.splitlines(keepends=True)
+            b_seq: typ.Sequence[str] = b.splitlines(keepends=True)
+        else:
+            b_seq = b
 
         last = None
-        cmpiter = super().compare(a, b)
+        cmpiter = super().compare(a_seq, b_seq)
         for line in cmpiter:
             tag = line[0]
             if tag != "?":
@@ -63,6 +69,7 @@ class ColoredDiffer(difflib.Differ):
                     yield self.colorise(last)
                 last = line
             else:
+                assert last is not None
                 a_line, a_diff = last, line
                 yield from self.colorise_char_diff(a_line, a_diff)
                 b_line, b_diff = next(cmpiter), next(cmpiter)

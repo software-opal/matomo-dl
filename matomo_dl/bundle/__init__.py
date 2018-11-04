@@ -1,9 +1,9 @@
+import gzip
 import logging
 import pathlib
 import tarfile
 import tempfile
 import typing as typ
-import gzip
 from contextlib import ExitStack
 
 import toml
@@ -12,8 +12,8 @@ from matomo_dl.distribution.file import DistributionFile
 from matomo_dl.distribution.lock import DistributionLockFile
 from matomo_dl.errors import DownloadHashMismatch
 from matomo_dl.lock.matomo import get_cache_key
-from matomo_dl.session import SessionStore
 from matomo_dl.progress import progressbar
+from matomo_dl.session import SessionStore
 from .customisation import apply_customisations
 from .extract import extract_zip_file
 from .info import BuildInformation
@@ -62,18 +62,19 @@ def create_release_tarball(build: BuildInformation, output_file: pathlib.Path):
     if output_file.suffixes[0] != ".tar":
         output_file = output_file.with_suffix(".tar.gz")
     with ExitStack() as stack:
-        bar = stack.enter_context(progressbar(length=3, label="Creating archive"))
         if output_file.suffix == ".tar":
-            file = stack.enter_context(tarfile.open(output_file, mode="w"))
+            file: tarfile.TarFile = stack.enter_context(  # type: ignore
+                tarfile.open(output_file, mode="w")
+            )
         elif output_file.suffix == ".gz":
-            output_fd = gzip.GzipFile(
+            output_fd: typ.IO[bytes] = gzip.GzipFile(  # type: ignore
                 filename="",
                 mode="wb",
                 compresslevel=9,
                 mtime=build.mtime_clamp,
                 fileobj=stack.enter_context(output_file.open("wb")),
             )
-            file = stack.enter_context(
+            file = stack.enter_context(  # type: ignore
                 tarfile.open(fileobj=stack.enter_context(output_fd), mode="w")
             )
         else:
@@ -83,12 +84,10 @@ def create_release_tarball(build: BuildInformation, output_file: pathlib.Path):
                 mode = "w:bz2"
             else:
                 raise ValueError()
-            file = stack.enter_context(
+            file = stack.enter_context(  # type: ignore
                 tarfile.open(output_file, mode=mode, compresslevel=9)
             )
-        bar.update(1)
         items = list(iter_folder_for_tar(file, build, build.folder, ""))
-        bar.update(2)
         bar = stack.enter_context(progressbar(items, label="Creating archive"))
         for tar_info, path in bar:
             if path:
@@ -120,7 +119,7 @@ def normalise_tar_info(
 
 def iter_folder_for_tar(
     tar: tarfile.TarFile, build: BuildInformation, folder: pathlib.Path, base_path: str
-):
+) -> typ.Iterator[typ.Tuple[tarfile.TarInfo, typ.Optional[pathlib.Path]]]:
     if base_path != "" and base_path[-1] != "/":
         base_path += "/"
     for path in sorted(folder.iterdir()):

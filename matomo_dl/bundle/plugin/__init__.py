@@ -21,9 +21,7 @@ def extract_plugins(
 ):
     plugin_locks = build.lockfile.plugin_locks
     with progressbar(plugin_locks.items(), label="Extracting plugins") as bar:
-        bar.render_progress()
         for name, plugin_lock in bar:
-            bar.render_progress()
             if isinstance(plugin_lock, VersionedPluginLock):
                 extract_versioned_plugin(session, license_key, build, name, plugin_lock)
             else:

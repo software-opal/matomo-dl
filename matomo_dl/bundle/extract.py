@@ -40,7 +40,7 @@ def extract_zip_file(
     latest_mtime = None
     with ExitStack() as stack:
         file = stack.enter_context(zipfile.ZipFile(BytesIO(file_data), "r"))
-        infos = file.infolist()
+        infos: typ.Iterable[zipfile.ZipInfo] = file.infolist()
         if progress:
             infos = stack.enter_context(progressbar(infos, label=progress))
         for item in infos:
