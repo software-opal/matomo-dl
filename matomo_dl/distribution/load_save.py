@@ -63,7 +63,7 @@ def diff_lockfiles(
     new_txt = stringify_distribution_lock(new)
     # We should have a diff at this point; if old != new and old_txt == new_txt then we have a bug
     assert old_txt != new_txt
-    if old.distribution_hash != new.distribution_hash:
+    if old and old.distribution_hash != new.distribution_hash:
         if not quieter:
             click.secho(
                 "# Note: these files were built from different distribution configurations",
