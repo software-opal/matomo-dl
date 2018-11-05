@@ -32,7 +32,7 @@ class GpgVerifier:
     def __exit__(self, ex_type, value, traceback):
         if self.tmp_folder is not None:
             # Occasional race condition may cause files in the tem directory to
-            # disappea during the removal. Just do the best we can
+            # disappear during the removal. Just do the best we can
             name = self.tmp_folder.name
             try:
                 self.tmp_folder.__exit__(ex_type, value, traceback)
