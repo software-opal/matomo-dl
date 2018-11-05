@@ -1,10 +1,8 @@
 import os
+import pathlib
+import shutil
 import subprocess
 import sys
-import shutil
-import pathlib
-import contextlib
-import tempfile
 import typing as typ
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -83,7 +81,7 @@ def fix_times(timestamp: int, folder: pathlib.Path = REPO_ROOT) -> int:
     return most_recent_time
 
 
-def do_multistage_release(version: str, file_paths: typ.Iterable[pathlib.Path]):
+def do_multistage_release(file_paths: typ.Iterable[pathlib.Path]):
     files = list(map(str, file_paths))
     subprocess.run(["pip", "hash"] + files, check=True)
 
@@ -151,7 +149,7 @@ __version__ = "{tag}"
             # Not reproducable. but meh.
             tarballs.append(item)
     if os.environ.get("CI") or "upload" in sys.argv:
-        do_upload(wheels + tarballs)
+        do_multistage_release(wheels + tarballs)
     else:
         print(
             "Refusing to upload without explicit command(add a `upload` argument) "

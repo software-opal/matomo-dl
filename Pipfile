@@ -22,6 +22,7 @@ flake8-pyi = "*"
 isort = "*"
 mypy = "*"
 diffoscope = "*"
+twine = "*"
 
 [pipenv]
 allow_prereleases = true

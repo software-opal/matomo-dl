@@ -39,7 +39,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Opal Symes",
     author_email="opal@catalyst.net.nz",
-    packages=find_packages(),
+    packages=find_packages(include=["matomo_dl.*"]),
     entry_points={
         "console_scripts": [
             "matomo-dl=matomo_dl.__main__:cli",
