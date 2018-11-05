@@ -24,7 +24,7 @@ class GpgVerifier:
 
     def __enter__(self) -> "GpgVerifier":
         if self.tmp_folder is None:
-            self.tmp_folder = tempfile.NamedTemporaryFile()
+            self.tmp_folder = tempfile.TemporaryDirectory()
             self.tmp_folder.__enter__()
         return self
 
