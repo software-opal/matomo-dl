@@ -46,6 +46,8 @@ class GpgVerifier:
             "--no-default-keyring",
             "--keyring",
             self.get_tmp_folder(),
+            "--homedir",
+            self.get_tmp_folder(),
         ) + args
         kwargs.setdefault("input", "")
         return subprocess.run(  # noqa: S603 -- assume callers are safe
