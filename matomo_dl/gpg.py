@@ -1,4 +1,5 @@
 import random
+import shutil
 import subprocess  # noqa: S404 -- subprocess usage is safe
 import tempfile
 import typing as typ
