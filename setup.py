@@ -32,7 +32,7 @@ required = [
 
 
 setup(
-    name="matomo-dl",
+    name="matomo_dl",
     version=about["__version__"],
     description=".",
     long_description=long_description,
