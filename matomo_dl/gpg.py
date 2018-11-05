@@ -30,6 +30,7 @@ class GpgVerifier:
 
     def __exit__(self, ex_type, value, traceback):
         if self.tmp_folder is not None:
+            shutil.rmtree(self.tmp_folder.name, ignore_errors=True)
             self.tmp_folder.__exit__(ex_type, value, traceback)
         self.tmp_folder = None
 
