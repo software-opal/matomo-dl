@@ -18,8 +18,18 @@ cache:
     - .cache/pip
     - .venv
 
-build-wheel:
+.python_template: &python_template
   image: python:3.6
+  before_script:
+    - pip install pipenv
+    - pipenv install --dev --deploy
+    - pipenv clean
+    - pipenv graph
+
+################################# Jobs follow #################################
+
+build-wheel:
+  <<: *python_template
   stage: build
   script:
     - pip wheel --wheel-dir ./wheels .
@@ -47,52 +57,38 @@ build-docker:
     - docker push $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG
 
 mypy:
-  image: python:3.6
+  <<: *python_template
   stage: test
-  before_script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv clean
   script:
     - pipenv run mypy .
 
 black:
-  image: python:3.6
+  <<: *python_template
   stage: test
-  before_script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv clean
   script:
     - pipenv run black --check --diff .
 
 flake8:
-  image: python:3.6
+  <<: *python_template
   stage: test
-  before_script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv clean
   script:
     - pipenv run flake8 .
 
 isort:
-  image: python:3.6
+  <<: *python_template
   stage: test
-  before_script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv clean
   script:
     - pipenv run isort --check-only -r .
 
-reproducable-builds:
-  image: python:3.6
+pipenv-check:
+  <<: *python_template
   stage: test
-  before_script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv clean
+  script:
+    - pipenv check
+
+reproducable-builds:
+  <<: *python_template
+  stage: test
   script:
     - rm -fr .test-cache tests/reproducable.lock.toml
     - pipenv run matomo-dl --cache=./.test-cache update tests/reproducable.toml
@@ -142,15 +138,11 @@ release-docker-tag:
     - docker push $CI_REGISTRY_IMAGE:latest
 
 release-pypi-master:
-  image: python:3.6
+  <<: *python_template
   stage: release
   only:
     - master
     - tags
-  before_script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv clean
   script:
     - TWINE_USERNAME="${CI_PYPI_USER}" \
       TWINE_PASSWORD="${CI_PYPI_PASSWORD}"\
@@ -158,7 +150,7 @@ release-pypi-master:
       pipenv run python3 support/release.py
 
 pages:
-  image: python:3.6
+  <<: *python_template
   stage: release
   allow_failure: true
   only:
