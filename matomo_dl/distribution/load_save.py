@@ -49,12 +49,17 @@ def write_lockfile_using_distribution_path(
     distribution_lockfile.write_text(stringify_distribution_lock(locks))
 
 
-def diff_lockfiles(old: DistributionLockFile, new: DistributionLockFile, quieter=False):
+def diff_lockfiles(
+    old: typ.Optional[DistributionLockFile], new: DistributionLockFile, quieter=False
+):
     if old == new:
         if not quieter:
             click.secho("No changes")
         return
-    old_txt = stringify_distribution_lock(old)
+    if old is None:
+        old_txt = ""
+    else:
+        old_txt = stringify_distribution_lock(old)
     new_txt = stringify_distribution_lock(new)
     # We should have a diff at this point; if old != new and old_txt == new_txt then we have a bug
     assert old_txt != new_txt
