@@ -21,15 +21,16 @@ cache:
   image: python:3.6
   before_script:
     - pip install pipenv
-    - pipenv install --dev --deploy
+    - pipenv install --dev --deploy --extra-index-url ./wheels
     - pipenv clean
-    # - pipenv run pip install ./
     - pipenv graph
+  dependencies:
+    - build-wheel
 
 ################################# Jobs follow #################################
 
 build-wheel:
-  <<: *python_template
+  image: python:3.6
   stage: build
   script:
     - python3 setup.py sdist
