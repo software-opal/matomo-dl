@@ -32,6 +32,7 @@ build-wheel:
   <<: *python_template
   stage: build
   script:
+    - python3 setup.py sdist
     - pip wheel --wheel-dir ./wheels .
   artifacts:
     paths:
