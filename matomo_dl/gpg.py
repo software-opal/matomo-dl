@@ -31,8 +31,16 @@ class GpgVerifier:
 
     def __exit__(self, ex_type, value, traceback):
         if self.tmp_folder is not None:
-            shutil.rmtree(self.tmp_folder.name, ignore_errors=True)
-            self.tmp_folder.__exit__(ex_type, value, traceback)
+            # Occasional race condition may cause files in the tem directory to
+            # disappea during the removal. Just do the best we can
+            name = self.tmp_folder.name
+            try:
+                self.tmp_folder.__exit__(ex_type, value, traceback)
+            except IOError:
+                try:
+                    shutil.rmtree(name, ignore_errors=True)
+                except IOError:
+                    pass
         self.tmp_folder = None
 
     def get_tmp_folder(self) -> str:
