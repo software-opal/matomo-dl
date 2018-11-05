@@ -101,10 +101,10 @@ reproducable-builds:
     - pipenv run matomo-dl --cache=./.test-cache build tests/reproducable.toml --output ./.test-cache/reproducable-1.tar.gz
     - pipenv run matomo-dl --cache=./.test-cache build tests/reproducable.toml --output ./.test-cache/reproducable-2.tar.gz
     # Diffoscope is like diff on steroids.
-    - pipenv run diffoscope --text-color=always --text --output-empty ./.test-cache/reproducable-{1,2}.tar.gz
+    - pipenv run diffoscope --text-color=always --output-empty ./.test-cache/reproducable-{1,2}.tar.gz
     # Test that it works even without a cache
     - pipenv run matomo-dl --cache-level=none    build tests/reproducable.toml --output ./.test-cache/reproducable-3.tar.gz
-    - pipenv run diffoscope --text-color=always --text --output-empty ./.test-cache/reproducable-{2,3}.tar.gz
+    - pipenv run diffoscope --text-color=always --output-empty ./.test-cache/reproducable-{2,3}.tar.gz
   artifacts:
     paths:
       - .test-cache
