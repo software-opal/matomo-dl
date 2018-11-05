@@ -45,7 +45,7 @@ class GpgVerifier:
             "--batch",
             "--no-default-keyring",
             "--keyring",
-            self.get_tmp_folder(),
+            self.get_tmp_folder() + "/keyring",
             "--homedir",
             self.get_tmp_folder(),
         ) + args
