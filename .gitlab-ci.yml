@@ -40,6 +40,9 @@ build-wheel:
 build-docker:
   image: docker:stable
   stage: build
+  only:
+    - master
+    - tags
   services:
     - docker:stable-dind
   variables:
@@ -110,8 +113,7 @@ release-docker-master:
   image: docker:stable
   stage: release
   only:
-    refs:
-      - master
+    - master
   services:
     - docker:stable-dind
   before_script:
