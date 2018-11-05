@@ -23,7 +23,7 @@ cache:
     - pip install pipenv
     - pipenv install --dev --deploy
     - pipenv clean
-    - pipenv run pip install ./
+    # - pipenv run pip install ./
     - pipenv graph
 
 ################################# Jobs follow #################################
