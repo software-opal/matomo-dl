@@ -9,8 +9,8 @@ variables:
   CI_APPLICATION_REPOSITORY: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
   CI_APPLICATION_TAG: $CI_COMMIT_SHA
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
-  PIPENV_VENV_IN_PROJECT: 1
-  PYTHONUNBUFFERED: 1
+  PIPENV_VENV_IN_PROJECT: "1"
+  PYTHONUNBUFFERED: "1"
 
 cache:
   paths:
@@ -24,6 +24,7 @@ cache:
     - pipenv install --dev --deploy --extra-index-url ./wheels
     - pipenv clean
     - pipenv graph
+    - pipenv run pip freeze
   dependencies:
     - build-wheel
 
