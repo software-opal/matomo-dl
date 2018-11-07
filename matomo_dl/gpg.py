@@ -21,7 +21,7 @@ class GpgVerifier:
 
     keyservers = frozenset(("keys.gnupg.net", "keyserver.ubuntu.com", "pgp.mit.edu"))
 
-    tmp_folder: typ.Optional[typ.IO] = None
+    tmp_folder: typ.Optional[tempfile.TemporaryDirectory] = None
 
     def __enter__(self) -> "GpgVerifier":
         if self.tmp_folder is None:

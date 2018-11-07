@@ -96,6 +96,8 @@ reproducable-builds:
   <<: *python_template
   stage: test
   script:
+    - apt-get update
+    - apt-get install libarchive13
     - rm -fr .test-cache tests/reproducable.lock.toml
     - pipenv run matomo-dl --cache=./.test-cache update tests/reproducable.toml
     - cp tests/reproducable.lock.toml .test-cache/
