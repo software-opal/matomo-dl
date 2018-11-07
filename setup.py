@@ -26,7 +26,7 @@ required = [
     "colorama==0.4.0",
     "lxml~=4.2",
     "packaging~=18.0",
-    "requests[security]~=2.20",
+    "requests~=2.20",
     "toml==0.10.0",
 ]
 

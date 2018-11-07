@@ -1,4 +1,5 @@
 import random
+import shutil
 import subprocess  # noqa: S404 -- subprocess usage is safe
 import tempfile
 import typing as typ
@@ -20,17 +21,26 @@ class GpgVerifier:
 
     keyservers = frozenset(("keys.gnupg.net", "keyserver.ubuntu.com", "pgp.mit.edu"))
 
-    tmp_folder: typ.Optional[typ.IO] = None
+    tmp_folder: typ.Optional[tempfile.TemporaryDirectory] = None
 
     def __enter__(self) -> "GpgVerifier":
         if self.tmp_folder is None:
-            self.tmp_folder = tempfile.NamedTemporaryFile()
+            self.tmp_folder = tempfile.TemporaryDirectory()
             self.tmp_folder.__enter__()
         return self
 
     def __exit__(self, ex_type, value, traceback):
         if self.tmp_folder is not None:
-            self.tmp_folder.__exit__(ex_type, value, traceback)
+            # Occasional race condition may cause files in the tem directory to
+            # disappear during the removal. Just do the best we can
+            name = self.tmp_folder.name
+            try:
+                self.tmp_folder.__exit__(ex_type, value, traceback)
+            except IOError:
+                try:
+                    shutil.rmtree(name, ignore_errors=True)
+                except IOError:
+                    pass
         self.tmp_folder = None
 
     def get_tmp_folder(self) -> str:
@@ -45,6 +55,8 @@ class GpgVerifier:
             "--batch",
             "--no-default-keyring",
             "--keyring",
+            self.get_tmp_folder() + "/keyring",
+            "--homedir",
             self.get_tmp_folder(),
         ) + args
         kwargs.setdefault("input", "")

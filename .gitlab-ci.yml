@@ -1,4 +1,3 @@
-
 stages:
   - build
   - test
@@ -10,18 +9,32 @@ variables:
   CI_APPLICATION_REPOSITORY: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG
   CI_APPLICATION_TAG: $CI_COMMIT_SHA
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
-  PIPENV_VENV_IN_PROJECT: 1
-  PYTHONUNBUFFERED: 1
+  PIPENV_VENV_IN_PROJECT: "1"
+  PYTHONUNBUFFERED: "1"
 
 cache:
   paths:
     - .cache/pip
     - .venv
 
+.python_template: &python_template
+  image: python:3.6
+  before_script:
+    - pip install pipenv
+    - pipenv install --dev --deploy --extra-index-url ./wheels
+    - pipenv clean
+    - pipenv graph
+    - pipenv run pip freeze
+  dependencies:
+    - build-wheel
+
+################################# Jobs follow #################################
+
 build-wheel:
   image: python:3.6
   stage: build
   script:
+    - python3 setup.py sdist
     - pip wheel --wheel-dir ./wheels .
   artifacts:
     paths:
@@ -30,6 +43,9 @@ build-wheel:
 build-docker:
   image: docker:stable
   stage: build
+  only:
+    - master
+    - tags
   services:
     - docker:stable-dind
   variables:
@@ -47,63 +63,51 @@ build-docker:
     - docker push $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG
 
 mypy:
-  image: python:3.6
+  <<: *python_template
   stage: test
-  before_script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv clean
   script:
     - pipenv run mypy .
 
 black:
-  image: python:3.6
+  <<: *python_template
   stage: test
-  before_script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv clean
   script:
     - pipenv run black --check --diff .
 
 flake8:
-  image: python:3.6
+  <<: *python_template
   stage: test
-  before_script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv clean
   script:
     - pipenv run flake8 .
 
 isort:
-  image: python:3.6
+  <<: *python_template
   stage: test
-  before_script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv clean
   script:
     - pipenv run isort --check-only -r .
 
-reproducable-builds:
-  image: python:3.6
+pipenv-check:
+  <<: *python_template
   stage: test
-  before_script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv clean
   script:
+    - pipenv check
+
+reproducable-builds:
+  <<: *python_template
+  stage: test
+  script:
+    - apt-get update
+    - apt-get install libarchive13
     - rm -fr .test-cache tests/reproducable.lock.toml
     - pipenv run matomo-dl --cache=./.test-cache update tests/reproducable.toml
     - cp tests/reproducable.lock.toml .test-cache/
-    - pipenv run matomo-dl --cache=./.test-cache build tests/reproducable.toml ./.test-cache/reproducable-1.tar.gz
-    - pipenv run matomo-dl --cache=./.test-cache build tests/reproducable.toml ./.test-cache/reproducable-2.tar.gz
+    - pipenv run matomo-dl --cache=./.test-cache build tests/reproducable.toml --output ./.test-cache/reproducable-1.tar.gz
+    - pipenv run matomo-dl --cache=./.test-cache build tests/reproducable.toml --output ./.test-cache/reproducable-2.tar.gz
     # Diffoscope is like diff on steroids.
-    - pipenv run diffoscope --text-color=always --text --output-empty ./.test-cache/reproducable-{1,2}.tar.gz
+    - pipenv run diffoscope --text-color=always --output-empty ./.test-cache/reproducable-{1,2}.tar.gz
     # Test that it works even without a cache
-    - pipenv run matomo-dl --cache-level=none    build tests/reproducable.toml ./.test-cache/reproducable-3.tar.gz
-    - pipenv run diffoscope --text-color=always --text --output-empty ./.test-cache/reproducable-{2,3}.tar.gz
+    - pipenv run matomo-dl --cache-level=none    build tests/reproducable.toml --output ./.test-cache/reproducable-3.tar.gz
+    - pipenv run diffoscope --text-color=always --output-empty ./.test-cache/reproducable-{2,3}.tar.gz
   artifacts:
     paths:
       - .test-cache
@@ -114,8 +118,7 @@ release-docker-master:
   image: docker:stable
   stage: release
   only:
-    refs:
-      - master
+    - master
   services:
     - docker:stable-dind
   before_script:
@@ -142,15 +145,11 @@ release-docker-tag:
     - docker push $CI_REGISTRY_IMAGE:latest
 
 release-pypi-master:
-  image: python:3.6
+  <<: *python_template
   stage: release
   only:
     - master
     - tags
-  before_script:
-    - pip install pipenv
-    - pipenv install --dev
-    - pipenv clean
   script:
     - TWINE_USERNAME="${CI_PYPI_USER}" \
       TWINE_PASSWORD="${CI_PYPI_PASSWORD}"\
@@ -158,7 +157,7 @@ release-pypi-master:
       pipenv run python3 support/release.py
 
 pages:
-  image: python:3.6
+  <<: *python_template
   stage: release
   allow_failure: true
   only:
