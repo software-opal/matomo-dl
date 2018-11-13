@@ -128,7 +128,8 @@ def do_multistage_release(file_paths: typ.Iterable[pathlib.Path]):
     if release_env:
         env = dict(release_env)
         env.update(base_env)
-        env.set_default("TWINE_REPOSITORY_URL", "https://pypi.org/legacy/")
+        if "TWINE_REPOSITORY_URL" not in env:
+            env["TWINE_REPOSITORY_URL"] = "https://upload.pypi.org/legacy/"
         subprocess.run(["twine", "upload"] + files, check=True, env=env)
 
 
