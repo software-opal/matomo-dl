@@ -82,7 +82,7 @@ def fix_times(timestamp: int, folder: pathlib.Path = REPO_ROOT) -> int:
 
 
 def do_multistage_release(file_paths: typ.Iterable[pathlib.Path]):
-    files = list(map(str, file_paths))
+    files = sorted(map(str, file_paths))
     subprocess.run(["pip", "hash"] + files, check=True)
 
     release_env = {
@@ -112,12 +112,10 @@ def do_multistage_release(file_paths: typ.Iterable[pathlib.Path]):
             )
         else:
             env["TWINE_REPOSITORY_URL"] = "https://test.pypi.org/legacy/"
-        subprocess.run(["twine", "upload"] + sorted(files.keys()), check=True, env=env)
+        subprocess.run(["twine", "upload"] + files, check=True, env=env)
     if release_env:
         env.set_default("TWINE_REPOSITORY_URL", "https://pypi.org/legacy/")
-        subprocess.run(
-            ["twine", "upload"] + sorted(files.keys()), check=True, env=release_env
-        )
+        subprocess.run(["twine", "upload"] + files, check=True, env=release_env)
 
 
 def main():
