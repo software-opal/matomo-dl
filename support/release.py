@@ -85,15 +85,26 @@ def do_multistage_release(file_paths: typ.Iterable[pathlib.Path]):
     files = sorted(map(str, file_paths))
     subprocess.run(["pip", "hash"] + files, check=True)
 
+    # We need to keep all the environmant variables that aren't related to twine
+    # so that python path and the like is passed through.
+    base_env = {
+        name: value
+        for name, value in os.environ.items()
+        if not name.startswith("TWINE_")
+    }
     release_env = {
         name: value
         for name, value in os.environ.items()
-        if name.startswith("TWINE_") and not name.startswith("TWINE_TEST_")
+        if (
+            name not in base_env
+            and name.startswith("TWINE_")
+            and not name.startswith("TWINE_TEST_")
+        )
     }
     test_env = {
         name.replace("TWINE_TEST_", "TWINE_"): value
         for name, value in os.environ.items()
-        if name.startswith("TWINE_TEST_")
+        if name not in base_env and name.startswith("TWINE_TEST_")
     }
     if not test_env and not release_env:
         print(
@@ -105,6 +116,7 @@ def do_multistage_release(file_paths: typ.Iterable[pathlib.Path]):
         # should be done
         env = dict(release_env)
         env.update(test_env)
+        env.update(base_env)
         if "TWINE_REPOSITORY_URL" in env:
             assert env["TWINE_REPOSITORY_URL"] != release_env["TWINE_REPOSITORY_URL"], (
                 "Refusing to test upload to the release server. "
@@ -114,8 +126,10 @@ def do_multistage_release(file_paths: typ.Iterable[pathlib.Path]):
             env["TWINE_REPOSITORY_URL"] = "https://test.pypi.org/legacy/"
         subprocess.run(["twine", "upload"] + files, check=True, env=env)
     if release_env:
+        env = dict(release_env)
+        env.update(base_env)
         env.set_default("TWINE_REPOSITORY_URL", "https://pypi.org/legacy/")
-        subprocess.run(["twine", "upload"] + files, check=True, env=release_env)
+        subprocess.run(["twine", "upload"] + files, check=True, env=env)
 
 
 def main():
