@@ -21,7 +21,7 @@ from matomo_dl.session import (
 )
 
 logger = logging.getLogger(__name__)
-click_log.basic_config(logger.parent)
+click_log.basic_config()
 cache_level_choices = sorted(
     set(
         tuple(map(str, CACHE_LEVEL_NAMES.keys()))

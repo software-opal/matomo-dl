@@ -1,4 +1,5 @@
 import gzip
+import json
 import logging
 import pathlib
 import tarfile
@@ -37,13 +38,13 @@ def build_release(
 
         apply_customisations(info)
 
-        (folder / ".build.toml").write_text(toml.dumps(info.to_output()))
+        (folder / ".build.json").write_text(json.dumps(info.to_output()))
         create_release_tarball(info, output_file)
 
 
 def extract_matomo(session: SessionStore, build: BuildInformation):
-    with progressbar(range(3), label="Extracting Matomo") as bar:
-        bar = iter(bar)
+    with progressbar(range(3), label="Extracting Matomo") as _bar:
+        bar = iter(_bar)
         lock = build.lockfile.matomo
         folder = build.folder
         data = session.retrieve_cache_data(get_cache_key(lock.version), lock.hash)

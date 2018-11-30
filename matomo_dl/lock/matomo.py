@@ -27,19 +27,24 @@ def sync_matomo_lock(
     version_spec: Version,
     existing_lock: typ.Optional[MatomoLock],
 ) -> MatomoLock:
+    logger.info("Resolving version spec: {}", version_spec)
     version = resolve_matomo_version_spec(session, version_spec)
     if existing_lock and version == existing_lock.version:
         return existing_lock
+    logger.info("Downloading matomo version {}", version_spec)
     cache_key = get_cache_key(version)
     url, data = get_matomo_version(session, version)
+    logger.info("Determining extraction root")
     base_path = get_zip_extraction_root(data, "piwik.php")
     if not base_path:
         logger.error("Cannot determine how to extract Matomo!")
         raise ValueError("")
     data_hash = session.store_cache_data(cache_key, data)
-    return MatomoLock(
+    lock = MatomoLock(
         version=version, link=url, hash=data_hash, extraction_root=base_path
     )
+    logger.info("Stored cache data. Lock: {}", lock)
+    return lock
 
 
 def get_matomo_version(
@@ -70,12 +75,17 @@ def get_matomo_version(
 def resolve_matomo_version_spec(
     session: requests.Session, version_spec: Version
 ) -> str:
+    logger.info(f"Getting latest matomo version from API")
     latest = get_latest_matomo_version(session)
     if version_spec.choose_version([latest]):
+        logger.info("Latest version({}) matches. Using it.", latest)
         return latest
     else:
+        logger.info("Latest version({}) doesn't match, checking all versions", latest)
         all_versions = get_all_matomo_versions(session)
+        logger.debug("All versions are:", all_versions)
         version = version_spec.choose_version(set(all_versions))
+        logger.info("Chosen version: {}", version)
         if version:
             return version
         else:
@@ -92,6 +102,7 @@ def get_all_matomo_versions(session: requests.Session) -> typ.Collection[str]:
     resp = session.get(BUILDS_URL)
     resp.raise_for_status()
     base_url = resp.url
+    logger.info("Got version listing, parsing with BeautifulSoup")
     soup = bs4.BeautifulSoup(resp.text, "lxml")
     versions = set()
     for a in soup.find_all("a"):
@@ -99,6 +110,7 @@ def get_all_matomo_versions(session: requests.Session) -> typ.Collection[str]:
             continue
         full_link = urljoin(base_url, a.attrs["href"])
         match = VERSION_REGEX.match(full_link)
+        logger.debug("Examined link(matches: {}): {!r}", match, full_link)
         if match:
             versions.add(match.group(1))
     return set(versions)
