@@ -129,6 +129,7 @@ def build(ctx, distribution_file, output_file, update_locks, fail_if_updates):
         click.secho("🔄 Checking for updates before building 🔄")
         ctx.invoke(update, distribution_file=distribution_file, **update_kws)
 
+    click.secho("  Building your distribution  ")
     session = ctx.obj["session"]
     assert isinstance(session, SessionStore)
     distribution_file = pathlib.Path(distribution_file)

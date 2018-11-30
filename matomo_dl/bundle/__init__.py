@@ -42,20 +42,25 @@ def build_release(
 
 
 def extract_matomo(session: SessionStore, build: BuildInformation):
-    lock = build.lockfile.matomo
-    folder = build.folder
-    data = session.retrieve_cache_data(get_cache_key(lock.version), lock.hash)
-    if not data:
-        r = session.get(lock.link)
-        data = r.content
-        data_hash = session.store_cache_data(get_cache_key(lock.version), data)
-        if lock.hash != data_hash:
-            raise DownloadHashMismatch()
-    latest_mtime = extract_zip_file(
-        data, folder, root=lock.extraction_root, progress="Extracting Matomo"
-    )
-    assert latest_mtime is not None
-    build.add_source_time(latest_mtime)
+    with progressbar(range(3), label="Extracting Matomo") as bar:
+        bar = iter(bar)
+        lock = build.lockfile.matomo
+        folder = build.folder
+        data = session.retrieve_cache_data(get_cache_key(lock.version), lock.hash)
+        next(bar)
+        if not data:
+            r = session.get(lock.link)
+            data = r.content
+            data_hash = session.store_cache_data(get_cache_key(lock.version), data)
+            if lock.hash != data_hash:
+                raise DownloadHashMismatch()
+        next(bar)
+        latest_mtime = extract_zip_file(
+            data, folder, root=lock.extraction_root, progress="Extracting Matomo"
+        )
+        assert latest_mtime is not None
+        build.add_source_time(latest_mtime)
+        next(bar)
 
 
 def create_release_tarball(build: BuildInformation, output_file: pathlib.Path):

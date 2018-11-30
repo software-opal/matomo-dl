@@ -14,9 +14,9 @@ hash = "sha256:6cf03abaad6711d92a72cda2afc4da28ebc1b81636daa8191b4dc0c9cfea3225"
 
 [plugin_locks.ActivityLog]
 extraction_root = "ActivityLog/"
-version = "3.2.1"
-link = "https://plugins.matomo.org/api/2.0/plugins/ActivityLog/download/3.2.1"
-hash = "sha256:e53ed1d050dacb506592802e2b76cd5ce4ff09387710b5f1207c41893cdcef49"
+version = "3.2.2"
+link = "https://plugins.matomo.org/api/2.0/plugins/ActivityLog/download/3.2.2"
+hash = "sha256:693b37e80773415cbcddb3e0648537c0399f931bdbfa4031ee6becc9c75040d6"
 
 [plugin_locks.CustomDimensions]
 extraction_root = "CustomDimensions/"
@@ -86,9 +86,9 @@ hash = "sha256:8284327518168677f68e1e08d36cab7d11409fd346de4cbab50e3e173f404e4c"
 
 [plugin_locks.SearchEngineKeywordsPerformance]
 extraction_root = "SearchEngineKeywordsPerformance/"
-version = "3.2.3"
-link = "https://plugins.matomo.org/api/2.0/plugins/SearchEngineKeywordsPerformance/download/3.2.3"
-hash = "sha256:22685f1ef7c989169a4027943c929292a4dafac23021b8755d8f22c7a0ccaf80"
+version = "3.2.4"
+link = "https://plugins.matomo.org/api/2.0/plugins/SearchEngineKeywordsPerformance/download/3.2.4"
+hash = "sha256:f9ea9416b945566458abaf082e0d7573731ad60679e0af7b770c876ed33d882e"
 
 [plugin_locks.UsersFlow]
 extraction_root = "UsersFlow/"
