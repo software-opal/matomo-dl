@@ -7,8 +7,6 @@ import tempfile
 import typing as typ
 from contextlib import ExitStack
 
-import toml
-
 from matomo_dl.distribution.file import DistributionFile
 from matomo_dl.distribution.lock import DistributionLockFile
 from matomo_dl.errors import DownloadHashMismatch
