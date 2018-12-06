@@ -90,6 +90,7 @@ def remove_documentation(build: BuildInformation) -> None:
         delete_all_matching(
             build.folder,
             extensions=[".md", ".rst", ".markdown", ".log"],
+            names=["license", "license.txt"],
             stems=[
                 "authors",
                 "changelog",
@@ -100,7 +101,7 @@ def remove_documentation(build: BuildInformation) -> None:
                 "legalnotice",
                 "license-colors",
                 "license-sizzle",
-                "license",
+                # "license",  # TODO: figure out how to keep 'plugins/Marketplace/angularjs/licensekey/'
                 "mit and gpl2 licenses",
                 "mit-license-history",
                 "mit-license",
@@ -116,6 +117,7 @@ def remove_documentation(build: BuildInformation) -> None:
                 "misc/user/index.html",
                 "misc/How to install Matomo.html",
                 "vendor/pear/archive_tar/docs/Archive_Tar.txt",
+                "libs/bower_components/chroma-js/LICENSE-colors",
             ],
         )
     )

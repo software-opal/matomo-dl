@@ -149,7 +149,6 @@ release-pypi-master:
   stage: release
   only:
     - master
-    - tags
   script:
     - export TWINE_USERNAME="${CI_PYPI_USER}"
     - export TWINE_PASSWORD="${CI_PYPI_PASSWORD}"
