@@ -1,16 +1,16 @@
 distribution_hash = "sha256:7bade4b8cc9b5fa3ea23965082ca99173d444a9fd9cdfbe7746e8685c940bb68"
 
 [matomo]
-version = "3.6.1"
-link = "https://builds.matomo.org/matomo-3.6.1.zip"
-hash = "sha256:76b0e92662a8e4f80b2722aedc9ae1afbd54340ce8a3895576bc96d745ffe47d"
+version = "3.7.0"
+link = "https://builds.matomo.org/matomo-3.7.0.zip"
+hash = "sha256:33f58f75ec45d715cdcaabd3210976a09c5bb390a4bbccd87fc9a101036fe555"
 extraction_root = "matomo/"
 
 [plugin_locks.AbTesting]
 extraction_root = "AbTesting/"
-version = "3.2.4"
-link = "https://plugins.matomo.org/api/2.0/plugins/AbTesting/download/3.2.4"
-hash = "sha256:6cf03abaad6711d92a72cda2afc4da28ebc1b81636daa8191b4dc0c9cfea3225"
+version = "3.2.5"
+link = "https://plugins.matomo.org/api/2.0/plugins/AbTesting/download/3.2.5"
+hash = "sha256:a6c552855fcc24a69ce670526c32abedb716e577ea32214bed1118853e837585"
 
 [plugin_locks.ActivityLog]
 extraction_root = "ActivityLog/"
@@ -20,9 +20,9 @@ hash = "sha256:693b37e80773415cbcddb3e0648537c0399f931bdbfa4031ee6becc9c75040d6"
 
 [plugin_locks.CustomDimensions]
 extraction_root = "CustomDimensions/"
-version = "3.1.3"
-link = "https://plugins.matomo.org/api/2.0/plugins/CustomDimensions/download/3.1.3"
-hash = "sha256:9bb18729b4f0d49d22fb1dcab76f9940a40d6beb3995889d3f5b1585bf7d35af"
+version = "3.1.5"
+link = "https://plugins.matomo.org/api/2.0/plugins/CustomDimensions/download/3.1.5"
+hash = "sha256:257df6b94426e0ec501b18d2bbf21c25f5122191c569d3db6479481c6ca4b2d2"
 
 [plugin_locks.CustomAlerts]
 extraction_root = "CustomAlerts/"
@@ -32,33 +32,33 @@ hash = "sha256:d6c87c8be3fe025e60db56a104971157ff23e1c61747582f4cd251165995d615"
 
 [plugin_locks.CustomReports]
 extraction_root = "CustomReports/"
-version = "3.1.3"
-link = "https://plugins.matomo.org/api/2.0/plugins/CustomReports/download/3.1.3"
-hash = "sha256:11d763e51473a17dc1c2cfec377b96f9474ddd9ffeed90c8ef16c13c4f1bbfab"
+version = "3.1.4"
+link = "https://plugins.matomo.org/api/2.0/plugins/CustomReports/download/3.1.4"
+hash = "sha256:001d6bfcd2ebd248118947cae4d45bee5c067d12fc00b4b90703d9903b0071e8"
 
 [plugin_locks.FormAnalytics]
 extraction_root = "FormAnalytics/"
-version = "3.1.8"
-link = "https://plugins.matomo.org/api/2.0/plugins/FormAnalytics/download/3.1.8"
-hash = "sha256:d87461d384413b22cd691a7ea99b801b9ae6ae91f2e2f0f3e5dcf0b14fc2e095"
+version = "3.1.9"
+link = "https://plugins.matomo.org/api/2.0/plugins/FormAnalytics/download/3.1.9"
+hash = "sha256:8605826aa736096e6cdbfae403801b9bce5d31599e1306ed3ba804dd450d4b68"
 
 [plugin_locks.Funnels]
 extraction_root = "Funnels/"
-version = "3.1.8"
-link = "https://plugins.matomo.org/api/2.0/plugins/Funnels/download/3.1.8"
-hash = "sha256:d1b6a3a51326a0c8709fdd04a6da8fd144a443a8d9e915c53ebcbdce02f2d703"
+version = "3.1.9"
+link = "https://plugins.matomo.org/api/2.0/plugins/Funnels/download/3.1.9"
+hash = "sha256:7fa1cc0a1d305a82dc5973a4fdfe5ca07fc599b46ff2fd6f7a56a985a158380c"
 
 [plugin_locks.HeatmapSessionRecording]
 extraction_root = "HeatmapSessionRecording/"
-version = "3.2.12"
-link = "https://plugins.matomo.org/api/2.0/plugins/HeatmapSessionRecording/download/3.2.12"
-hash = "sha256:aab3edbc6fcd6ada0ce631473d144db41d83304eec01e5f53544a727d2baee1d"
+version = "3.2.13"
+link = "https://plugins.matomo.org/api/2.0/plugins/HeatmapSessionRecording/download/3.2.13"
+hash = "sha256:bde1ab149f86bc9c593af4849dc75224008cf8c5f1318e25ddfe93a1fa15970d"
 
 [plugin_locks.MultiChannelConversionAttribution]
 extraction_root = "MultiChannelConversionAttribution/"
-version = "3.0.3"
-link = "https://plugins.matomo.org/api/2.0/plugins/MultiChannelConversionAttribution/download/3.0.3"
-hash = "sha256:53a3b73e0471c7eb1f242f063e7fbfe641eb1bebe0f3c774994526b4f934123c"
+version = "3.0.4"
+link = "https://plugins.matomo.org/api/2.0/plugins/MultiChannelConversionAttribution/download/3.0.4"
+hash = "sha256:f8001db24eba44f6606f8744675e17ad26b94b376d1d7e47122e11ebd2681874"
 
 [plugin_locks.MarketingCampaignsReporting]
 extraction_root = "MarketingCampaignsReporting/"
@@ -68,9 +68,9 @@ hash = "sha256:bfdb6952293bc11cb579cafff5a8cc2424203fa823fede3d2d0b30cfb6c4c8d9"
 
 [plugin_locks.MediaAnalytics]
 extraction_root = "MediaAnalytics/"
-version = "3.2.10"
-link = "https://plugins.matomo.org/api/2.0/plugins/MediaAnalytics/download/3.2.10"
-hash = "sha256:43bfd121ad7f40dc50849697e9d31b846054159cb2ab0cc89f04799b7b113d63"
+version = "3.2.12"
+link = "https://plugins.matomo.org/api/2.0/plugins/MediaAnalytics/download/3.2.12"
+hash = "sha256:9d24e728ae50d17425ab4577737dd27b9af058a19855a04c1e1d89350b93f0f1"
 
 [plugin_locks.QueuedTracking]
 extraction_root = "QueuedTracking/"
@@ -80,21 +80,21 @@ hash = "sha256:06c7d9ef2f4581ddaa13dcc12beae6b86db9b6549eb54a8e79176d8271fd570b"
 
 [plugin_locks.RollUpReporting]
 extraction_root = "RollUpReporting/"
-version = "3.2.2"
-link = "https://plugins.matomo.org/api/2.0/plugins/RollUpReporting/download/3.2.2"
-hash = "sha256:8284327518168677f68e1e08d36cab7d11409fd346de4cbab50e3e173f404e4c"
+version = "3.2.3"
+link = "https://plugins.matomo.org/api/2.0/plugins/RollUpReporting/download/3.2.3"
+hash = "sha256:162cc99afed9cda3d4216810573cb225dac0a204c6ea6ce27eb91601129171cb"
 
 [plugin_locks.SearchEngineKeywordsPerformance]
 extraction_root = "SearchEngineKeywordsPerformance/"
-version = "3.2.4"
-link = "https://plugins.matomo.org/api/2.0/plugins/SearchEngineKeywordsPerformance/download/3.2.4"
-hash = "sha256:f9ea9416b945566458abaf082e0d7573731ad60679e0af7b770c876ed33d882e"
+version = "3.2.5"
+link = "https://plugins.matomo.org/api/2.0/plugins/SearchEngineKeywordsPerformance/download/3.2.5"
+hash = "sha256:36a2c8e0e839c80cdbe88d2a72193762cc93c8f6fc29eeb9f24d9dbc64529975"
 
 [plugin_locks.UsersFlow]
 extraction_root = "UsersFlow/"
-version = "3.1.7"
-link = "https://plugins.matomo.org/api/2.0/plugins/UsersFlow/download/3.1.7"
-hash = "sha256:f27b35bd8f499c57bc8d70185fb7d35571d28cfd49656eb25bac4f71e4f4e14a"
+version = "3.1.8"
+link = "https://plugins.matomo.org/api/2.0/plugins/UsersFlow/download/3.1.8"
+hash = "sha256:a09b29305112cc31b5211da445a373020a88eb5bc1e9a9655a5687ba947cb2df"
 
 [plugin_locks.IP2Location]
 extraction_root = "IP2Location/"

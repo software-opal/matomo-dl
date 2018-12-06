@@ -134,6 +134,12 @@ def build(ctx, distribution_file, output_file, update_locks, fail_if_updates):
     assert isinstance(session, SessionStore)
     distribution_file = pathlib.Path(distribution_file)
     dist, lock = load_from_distribution_path(distribution_file)
+    if not lock:
+        click.secho(
+            "⛔ The distribution file hasn't been locked ⛔", fg="yellow", bold=True
+        )
+        click.echo("Add '--sync' to create one as part of the build.")
+        ctx.exit(1)
     if lock.distribution_hash != dist.versioning_hash:
         click.secho("⛔ The distribution file has changed ⛔", fg="yellow", bold=True)
         click.echo("Cowardly refusing to build from an outdated lock file.")
