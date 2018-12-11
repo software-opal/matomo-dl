@@ -41,25 +41,29 @@ def build_release(
 
 
 def extract_matomo(session: SessionStore, build: BuildInformation):
-    with progressbar(range(3), label="Extracting Matomo") as _bar:
+    with progressbar(range(4), label="Acquiring Matomo") as _bar:
+        logger.info("Attempting to retrieve Matomo zipfile from cache")
         bar = iter(_bar)
         lock = build.lockfile.matomo
         folder = build.folder
+        next(bar)
         data = session.retrieve_cache_data(get_cache_key(lock.version), lock.hash)
         next(bar)
         if not data:
+            logger.info("Matomo zipfile not in cache. Downloading it now")
             r = session.get(lock.link)
+            next(bar)
             data = r.content
             data_hash = session.store_cache_data(get_cache_key(lock.version), data)
+            next(bar)
             if lock.hash != data_hash:
                 raise DownloadHashMismatch()
-        next(bar)
-        latest_mtime = extract_zip_file(
-            data, folder, root=lock.extraction_root, progress="Extracting Matomo"
-        )
-        assert latest_mtime is not None
-        build.add_source_time(latest_mtime)
-        next(bar)
+        list(bar)  # Finish the progress bar
+    latest_mtime = extract_zip_file(
+        data, folder, root=lock.extraction_root, progress="Extracting Matomo"
+    )
+    assert latest_mtime is not None
+    build.add_source_time(latest_mtime)
 
 
 def create_release_tarball(build: BuildInformation, output_file: pathlib.Path):
@@ -71,6 +75,9 @@ def create_release_tarball(build: BuildInformation, output_file: pathlib.Path):
                 tarfile.open(output_file, mode="w")
             )
         elif output_file.suffix == ".gz":
+            # Have to construct the gzip stream seperately otherwise python
+            #  'helpfully' adds the current time as a gzip comment; thus
+            #  ruining our reproducible builds.
             output_fd: typ.IO[bytes] = gzip.GzipFile(  # type: ignore
                 filename="",
                 mode="wb",

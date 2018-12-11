@@ -39,9 +39,3 @@ def regenerate_manifest(build: BuildInformation) -> None:
         content.append(f'{indent}"{fname}" => array("{file_size}", "{file_hash}"),')
     postfix.extend(manifest_file)
     manifest.write_text("\n".join(prefix + sorted(content) + postfix))
-
-
-def autoload():
-    # vendor/composer/autoload_classmap.php
-    # vendor/composer/autoload_static.php
-    pass

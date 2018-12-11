@@ -2,7 +2,8 @@ import typing as typ
 
 import attr
 
-from matomo_dl.bundle.customisation import CustomisationCollection, manifest, remove
+from matomo_dl.bundle.customisation import CustomisationCollection
+from matomo_dl.bundle.customisation import manifest, remove, autoload, config
 from matomo_dl.call_tree import OrderedCall
 
 oc_from_c = OrderedCall.from_callable
@@ -30,17 +31,28 @@ class ManifestCustomisation(Customisation):
 
     def get_customisation_functions(self) -> CustomisationCollection:
         return filter_customisations(
-            (self.regenerate, oc_from_c(manifest.regenerate_manifest, requires=["ALL"]))
+            (
+                self.regenerate,
+                oc_from_c(manifest.regenerate_manifest, requires=["ALL"]),
+            ),
+            (
+                self.regenerate,
+                oc_from_c(autoload.regenerate_autoload_classmap, requires=["ALL"]),
+            ),
+            (
+                self.regenerate,
+                oc_from_c(autoload.regenerate_autoload_static, requires=["ALL"]),
+            ),
         )
 
 
 @attr.s
 class RemoveCustomisation(Customisation):
 
-    build_support: bool = attr.ib()
-    documentation: bool = attr.ib()
-    example_plugins: bool = attr.ib()
-    vendored_extras: bool = attr.ib()
+    build_support: bool = attr.ib(default=False)
+    documentation: bool = attr.ib(default=False)
+    example_plugins: bool = attr.ib(default=False)
+    vendored_extras: bool = attr.ib(default=False)
 
     def get_customisation_functions(self) -> CustomisationCollection:
         return filter_customisations(
@@ -66,31 +78,7 @@ class RemoveCustomisation(Customisation):
 @attr.s
 class UpdateCustomisation(Customisation):
 
-    cacert: bool = attr.ib()
-
-    # piwik_professional_support_ads_enabled
-
-    def get_customisation_functions(self) -> CustomisationCollection:
-        return filter_customisations()
-
-
-@attr.s
-class ConfigPlugins:
-
-    delete_examples: bool = attr.ib()
-    add_installed: bool = attr.ib()
-
-    def get_customisation_functions(self) -> CustomisationCollection:
-        return filter_customisations()
-
-
-@attr.s
-class ConfigPluginsInstalled:
-
-    delete_examples: typ.Optional[bool] = attr.ib()
-    add_installed: typ.Optional[bool] = attr.ib()
-    delete_marketplace: typ.Optional[bool] = attr.ib()
-    delete_professional_services: typ.Optional[bool] = attr.ib()
+    cacert: bool = attr.ib(default=False)
 
     def get_customisation_functions(self) -> CustomisationCollection:
         return filter_customisations()

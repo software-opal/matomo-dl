@@ -32,7 +32,7 @@ cache_level_choices = sorted(
 
 @click.group()
 @click.version_option(version=__version__)
-@click_log.simple_verbosity_option(logger)
+@click_log.simple_verbosity_option(logging.root)
 @click.option(
     "--cache",
     "--cache-dir",
