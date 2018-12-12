@@ -97,7 +97,7 @@ class Customisations(Customisation):
 
     def get_customisation_functions(self) -> CustomisationCollection:
         fns: typ.List[OrderedCall] = [
-            OrderedCall.from_callable(config, requires=["FILES"])
+            OrderedCall.from_callable(config.update_plugins_list, requires=["FILES"])
         ]
         if self.manifest is not None:
             fns.extend(self.manifest.get_customisation_functions())

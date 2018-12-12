@@ -27,11 +27,11 @@ def sync_matomo_lock(
     version_spec: Version,
     existing_lock: typ.Optional[MatomoLock],
 ) -> MatomoLock:
-    logger.info("Resolving version spec: {}", version_spec)
+    logger.info(f"Resolving version spec: {version_spec}")
     version = resolve_matomo_version_spec(session, version_spec)
     if existing_lock and version == existing_lock.version:
         return existing_lock
-    logger.info("Downloading matomo version {}", version_spec)
+    logger.info(f"Downloading matomo version {version_spec}")
     cache_key = get_cache_key(version)
     url, data = get_matomo_version(session, version)
     logger.info("Determining extraction root")
@@ -43,7 +43,7 @@ def sync_matomo_lock(
     lock = MatomoLock(
         version=version, link=url, hash=data_hash, extraction_root=base_path
     )
-    logger.info("Stored cache data. Lock: {}", lock)
+    logger.info(f"Stored cache data. Lock: {lock}")
     return lock
 
 
@@ -78,14 +78,14 @@ def resolve_matomo_version_spec(
     logger.info(f"Getting latest matomo version from API")
     latest = get_latest_matomo_version(session)
     if version_spec.choose_version([latest]):
-        logger.info("Latest version({}) matches. Using it.", latest)
+        logger.info(f"Latest version({latest}) matches. Using it.")
         return latest
     else:
-        logger.info("Latest version({}) doesn't match, checking all versions", latest)
+        logger.info(f"Latest version({latest}) doesn't match, checking all versions")
         all_versions = get_all_matomo_versions(session)
-        logger.debug("All versions are:", all_versions)
+        logger.debug(f"All versions are:{all_versions}")
         version = version_spec.choose_version(set(all_versions))
-        logger.info("Chosen version: {}", version)
+        logger.info(f"Chosen version: {version}")
         if version:
             return version
         else:
@@ -110,7 +110,7 @@ def get_all_matomo_versions(session: requests.Session) -> typ.Collection[str]:
             continue
         full_link = urljoin(base_url, a.attrs["href"])
         match = VERSION_REGEX.match(full_link)
-        logger.debug("Examined link(matches: {}): {!r}", match, full_link)
+        logger.debug("Examined link(matches: {match}): {full_link!r}")
         if match:
             versions.add(match.group(1))
     return set(versions)

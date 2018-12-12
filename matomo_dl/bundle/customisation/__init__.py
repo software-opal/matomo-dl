@@ -31,4 +31,7 @@ def apply_customisations(build: BuildInformation) -> None:
     calls = order_calls_by_dependencies(tree_inputs)
     with progressbar(calls, label="Applying customisations") as bar:
         for call in bar:
-            call.call(build)
+            try:
+                call.call(build)
+            except Exception as e:
+                raise ValueError(f"Call to customisation {call!r} failed") from e
