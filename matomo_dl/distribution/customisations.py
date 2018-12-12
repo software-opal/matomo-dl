@@ -2,8 +2,13 @@ import typing as typ
 
 import attr
 
-from matomo_dl.bundle.customisation import CustomisationCollection
-from matomo_dl.bundle.customisation import manifest, remove, autoload, config
+from matomo_dl.bundle.customisation import (
+    CustomisationCollection,
+    autoload,
+    config,
+    manifest,
+    remove,
+)
 from matomo_dl.call_tree import OrderedCall
 
 oc_from_c = OrderedCall.from_callable
@@ -91,7 +96,9 @@ class Customisations(Customisation):
     update: typ.Optional[UpdateCustomisation] = attr.ib(default=None)
 
     def get_customisation_functions(self) -> CustomisationCollection:
-        fns: typ.List[OrderedCall] = []
+        fns: typ.List[OrderedCall] = [
+            OrderedCall.from_callable(config, requires=["FILES"])
+        ]
         if self.manifest is not None:
             fns.extend(self.manifest.get_customisation_functions())
         if self.remove is not None:

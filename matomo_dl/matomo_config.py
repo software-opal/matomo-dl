@@ -1,13 +1,17 @@
 import collections
 import re
+import typing as typ
 
 SECTION_RE = re.compile(r"^\[(.*?)\](\s*;|$)")
 ENTRY_RE = re.compile(r"^(.*?)\s*=\s*(.*?)(\s*;|$)")
 
+ConfigValueScalars = typ.Union[None, int, float, str]
+ConfigValues = typ.Union[ConfigValueScalars, typ.List[ConfigValueScalars]]
 
-def read(file):
-    current_section = None
-    config = collections.OrderedDict()
+
+def read(file: typ.Iterable[str]) -> typ.Dict[str, typ.Dict[str, ConfigValues]]:
+    current_section: typ.Dict[str, ConfigValues] = collections.OrderedDict()
+    config: typ.Dict[str, typ.Dict[str, ConfigValues]] = collections.OrderedDict()
     for line in file:
         line = line.strip()
         if not line or line[0] == ";":
@@ -20,34 +24,35 @@ def read(file):
         elif entry_match:
             key, value = entry_match.group(1, 2)
             key, value = key.strip(), value.strip()
-            print(f"{key!r} {value!r}")
             if not value:
-                value = None
+                real_value: ConfigValueScalars = None
             elif value[0] == value[-1] and value[0] in ['"', "'"]:
-                value = value[1:-2]
+                real_value = value[1:-2]
             else:
                 try:
-                    value = int(value)
+                    real_value = int(value)
                 except ValueError:
                     try:
-                        value = float(value)
+                        real_value = float(value)
                     except ValueError:
                         pass
             if key.endswith("[]"):
-                current_section.setdefault(key[:-2], []).append(value)
+                val = current_section.setdefault(key[:-2], [])
+                assert isinstance(val, list)
+                val.append(real_value)
             else:
-                current_section[key] = value
+                current_section[key] = real_value
     return config
 
 
-def write(config, file):
+def write(config: typ.Dict[str, typ.Dict[str, ConfigValues]], file: typ.IO):
     file.write("; <?php exit; ?> DO NOT REMOVE THIS LINE\n")
     for section, items in config.items():
         file.write(f"\n[{section}]\n")
         file.write("".join(_value_to_string(k, v) for k, v in items.items()))
 
 
-def _value_to_string(key, value) -> str:
+def _value_to_string(key: str, value: ConfigValues) -> str:
     if value is None:
         return f"{key} =\n"
     elif isinstance(value, str):

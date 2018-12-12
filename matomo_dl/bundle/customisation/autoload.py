@@ -1,6 +1,5 @@
 import logging
 import re
-from hashlib import md5
 
 from matomo_dl.bundle.info import BuildInformation
 

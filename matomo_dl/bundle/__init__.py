@@ -71,7 +71,7 @@ def create_release_tarball(build: BuildInformation, output_file: pathlib.Path):
         output_file = output_file.with_suffix(".tar.gz")
     with ExitStack() as stack:
         if output_file.suffix == ".tar":
-            file: tarfile.TarFile = stack.enter_context(  # type: ignore
+            file: tarfile.TarFile = stack.enter_context(
                 tarfile.open(output_file, mode="w")
             )
         elif output_file.suffix == ".gz":
@@ -85,7 +85,7 @@ def create_release_tarball(build: BuildInformation, output_file: pathlib.Path):
                 mtime=build.mtime_clamp,
                 fileobj=stack.enter_context(output_file.open("wb")),
             )
-            file = stack.enter_context(  # type: ignore
+            file = stack.enter_context(
                 tarfile.open(fileobj=stack.enter_context(output_fd), mode="w")
             )
         else:
@@ -95,7 +95,7 @@ def create_release_tarball(build: BuildInformation, output_file: pathlib.Path):
                 mode = "w:bz2"
             else:
                 raise ValueError()
-            file = stack.enter_context(  # type: ignore
+            file = stack.enter_context(
                 tarfile.open(output_file, mode=mode, compresslevel=9)
             )
         items = list(iter_folder_for_tar(file, build, build.folder, ""))
