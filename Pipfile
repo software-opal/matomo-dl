@@ -4,13 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-matomo-dl = {editable = true, path = "."}
+matomo-dl = {editable = true,path = "."}
 
 [requires]
 python_version = "3.6"
 
 [dev-packages]
-matomo-dl = {editable = true, extras = ["cache"], path = "."}
+matomo-dl = {editable = true,extras = ["cache"],path = "."}
+bumpversion = "*"
 black = "*"
 flake8 = "*"
 flake8-bugbear = "*"

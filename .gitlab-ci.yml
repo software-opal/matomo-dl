@@ -151,10 +151,21 @@ release-pypi-master:
   only:
     - master
   script:
-    - export TWINE_USERNAME="${CI_PYPI_USER}"
-    - export TWINE_PASSWORD="${CI_PYPI_PASSWORD}"
+    - export TWINE_TEST_USERNAME="${CI_PYPI_USER}"
     - export TWINE_TEST_PASSWORD="${CI_TEST_PYPI_PASSWORD}"
     - pipenv run python3 support/release.py
+
+
+release-pypi-tag:
+  <<: *python_template
+  stage: release
+  only:
+    - tags
+  script:
+    - export TWINE_USERNAME="${CI_PYPI_USER}"
+    - export TWINE_PASSWORD="${CI_PYPI_PASSWORD}"
+    - pipenv run python3 support/release.py
+
 
 pages:
   <<: *python_template
