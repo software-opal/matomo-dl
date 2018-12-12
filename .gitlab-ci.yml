@@ -40,28 +40,6 @@ build-wheel:
     paths:
       - ./wheels
 
-build-docker:
-  image: docker:stable
-  stage: build
-  only:
-    - master
-    - tags
-  services:
-    - docker:stable-dind
-  variables:
-  before_script:
-    - apk add -U git
-    - docker login -u $CI_DEPLOY_RW_USER -p $CI_DEPLOY_RW_PASSWORD $CI_REGISTRY
-    - export PREVIOUS_APPLICATION_TAG=$(git rev-parse HEAD~1) || true
-    - docker pull $CI_REGISTRY_IMAGE:master $CI_REGISTRY_IMAGE:latest || true
-    - docker pull $CI_APPLICATION_REPOSITORY:$PREVIOUS_APPLICATION_TAG || true
-  script:
-    - docker build
-        --cache-from=$CI_APPLICATION_REPOSITORY:{master,latest,$PREVIOUS_APPLICATION_TAG}
-        --tag=$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG
-        .
-    - docker push $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG
-
 mypy:
   <<: *python_template
   stage: test
@@ -114,36 +92,6 @@ reproducable-builds:
       - .test-cache
     expire_in: 1 day
 
-
-release-docker-master:
-  image: docker:stable
-  stage: release
-  only:
-    - master
-  services:
-    - docker:stable-dind
-  before_script:
-    - docker login -u $CI_DEPLOY_RW_USER -p $CI_DEPLOY_RW_PASSWORD $CI_REGISTRY
-  script:
-    - docker pull $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG
-    - docker tag $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG $CI_REGISTRY_IMAGE:master
-    - docker push $CI_REGISTRY_IMAGE:master
-
-release-docker-tag:
-  image: docker:stable
-  stage: release
-  only:
-    - tags
-  services:
-    - docker:stable-dind
-  before_script:
-    - docker login -u $CI_DEPLOY_RW_USER -p $CI_DEPLOY_RW_PASSWORD $CI_REGISTRY
-  script:
-    - docker pull $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG
-    - docker tag $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-    - docker tag $CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG $CI_REGISTRY_IMAGE:latest
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-    - docker push $CI_REGISTRY_IMAGE:latest
 
 release-pypi-master:
   <<: *python_template
