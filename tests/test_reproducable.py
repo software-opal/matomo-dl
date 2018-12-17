@@ -59,6 +59,9 @@ def test_reproducable_build(cli_runner):
         ],
         cwd=TESTS_FOLDER,
         check=True,
+        env={
+            'SOURCE_DATE_EPOCH': '1539847974',
+        }
     )
 
     with tarfile.open(output1) as tar:
