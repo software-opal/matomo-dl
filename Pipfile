@@ -4,15 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-matomo-dl = {editable = true,path = "."}
+matomo-dl = {editable = true,extras = ["cache"],path = "."}
 
 [requires]
 python_version = "3.6"
 
 [dev-packages]
-matomo-dl = {editable = true,extras = ["cache"],path = "."}
-bump2version = "*"
 black = "*"
+bump2version = "*"
+diffoscope = "*"
 flake8 = "*"
 flake8-bugbear = "*"
 flake8-builtins = "*"
@@ -22,8 +22,9 @@ flake8-pep3101 = "*"
 flake8-pyi = "*"
 isort = "*"
 mypy = "*"
-diffoscope = "*"
+pytest = "*"
 twine = "*"
+pytest-click = "*"
 
 [pipenv]
 allow_prereleases = true

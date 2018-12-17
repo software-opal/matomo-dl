@@ -56,7 +56,6 @@ def cli(ctx, cache_dir: str, cache_level: str, cache_clear: bool):
     ctx.obj["session"] = create_session(
         cache_dir=cache_dir, level=cache_level, clear=cache_clear
     )
-    pass
 
 
 @cli.command()

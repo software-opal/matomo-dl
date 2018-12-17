@@ -8,10 +8,19 @@ ENTRY_RE = re.compile(r"^(.*?)\s*=\s*(.*?)(\s*;|$)")
 ConfigValueScalars = typ.Union[None, int, float, str]
 ConfigValues = typ.Union[ConfigValueScalars, typ.List[ConfigValueScalars]]
 
+if not hasattr(typ, "OrderedDict"):
 
-def read(file: typ.Iterable[str]) -> typ.Dict[str, typ.Dict[str, ConfigValues]]:
-    current_section: typ.Dict[str, ConfigValues] = collections.OrderedDict()
-    config: typ.Dict[str, typ.Dict[str, ConfigValues]] = collections.OrderedDict()
+    class OrderedDict(collections.OrderedDict, typ.MutableMapping[typ.KT, typ.VT]):
+        pass
+
+
+else:
+    OrderedDict = OrderedDict
+
+
+def read(file: typ.Iterable[str]) -> OrderedDict[str, OrderedDict[str, ConfigValues]]:
+    current_section: OrderedDict[str, ConfigValues] = collections.OrderedDict()
+    config: OrderedDict[str, OrderedDict[str, ConfigValues]] = collections.OrderedDict()
     for line in file:
         line = line.strip()
         if not line or line[0] == ";":
@@ -23,11 +32,12 @@ def read(file: typ.Iterable[str]) -> typ.Dict[str, typ.Dict[str, ConfigValues]]:
             config[section_match.group(1)] = current_section
         elif entry_match:
             key, value = entry_match.group(1, 2)
+            print(f"{key!r} = {value!r}")
             key, value = key.strip(), value.strip()
             if not value:
                 real_value: ConfigValueScalars = None
             elif value[0] == value[-1] and value[0] in ['"', "'"]:
-                real_value = value[1:-2]
+                real_value = value[1:-1]
             else:
                 try:
                     real_value = int(value)
@@ -35,7 +45,7 @@ def read(file: typ.Iterable[str]) -> typ.Dict[str, typ.Dict[str, ConfigValues]]:
                     try:
                         real_value = float(value)
                     except ValueError:
-                        pass
+                        real_value = value
             if key.endswith("[]"):
                 val = current_section.setdefault(key[:-2], [])
                 assert isinstance(val, list)
@@ -45,8 +55,14 @@ def read(file: typ.Iterable[str]) -> typ.Dict[str, typ.Dict[str, ConfigValues]]:
     return config
 
 
-def write(config: typ.Dict[str, typ.Dict[str, ConfigValues]], file: typ.IO):
-    file.write("; <?php exit; ?> DO NOT REMOVE THIS LINE\n")
+def write(
+    config: typ.Dict[str, typ.Dict[str, ConfigValues]],
+    file: typ.IO,
+    *,
+    include_php_exit=True,
+):
+    if include_php_exit:
+        file.write("; <?php exit; ?> DO NOT REMOVE THIS LINE\n")
     for section, items in config.items():
         file.write(f"\n[{section}]\n")
         file.write("".join(_value_to_string(k, v) for k, v in items.items()))

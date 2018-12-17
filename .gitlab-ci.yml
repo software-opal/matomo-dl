@@ -70,27 +70,13 @@ pipenv-check:
   script:
     - pipenv check
 
-reproducable-builds:
+tests:
   <<: *python_template
   stage: test
   script:
     - apt-get update
-    - apt-get install libarchive13
-    - rm -fr .test-cache tests/reproducable.lock.toml
-    - pipenv run matomo-dl --cache=./.test-cache update tests/reproducable.toml
-    - cp tests/reproducable.lock.toml .test-cache/
-    - pipenv run matomo-dl --cache=./.test-cache build tests/reproducable.toml --output ./.test-cache/reproducable-1.tar.gz
-    - pipenv run matomo-dl --cache=./.test-cache build tests/reproducable.toml --output ./.test-cache/reproducable-2.tar.gz
-    # Diffoscope is like diff on steroids.
-    - pipenv run diffoscope --text-color=always --output-empty ./.test-cache/reproducable-{1,2}.tar.gz
-    # Test that it works even without a cache
-    - pipenv run matomo-dl --cache-level=none    build tests/reproducable.toml --output ./.test-cache/reproducable-3.tar.gz
-    - pipenv run diffoscope --text-color=always --output-empty ./.test-cache/reproducable-{2,3}.tar.gz
-    - tar tf ./.test-cache/reproducable-3.tar.gz
-  artifacts:
-    paths:
-      - .test-cache
-    expire_in: 1 day
+    - apt-get install libarchive13  # Needed for diffoscope
+    - pipenv run pytest .
 
 
 release-pypi-master:
