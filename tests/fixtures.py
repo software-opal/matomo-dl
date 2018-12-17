@@ -9,7 +9,8 @@ import shutil
 import requests
 
 MATOMO_ZIP_SHA1S = {"3.6.1": "59daaf90805c98de006db28fa297f01e1dd235ce"}
-TEST_CACHE = pathlib.Path(__file__).parent.parent / '.test_cache'
+TEST_CACHE = pathlib.Path(__file__).parent.parent / ".test_cache"
+
 
 def download_matomo_zip(version: str, f: typ.IO):
     expected_sha = MATOMO_ZIP_SHA1S[version]
@@ -18,7 +19,7 @@ def download_matomo_zip(version: str, f: typ.IO):
     ) as r:
         r.raise_for_status()
         hasher = hashlib.sha1()
-        for data in r.iter_content(chunk_size=1024*1024):
+        for data in r.iter_content(chunk_size=1024 * 1024):
             if data:
                 f.write(data)
                 hasher.update(data)
@@ -28,39 +29,39 @@ def download_matomo_zip(version: str, f: typ.IO):
 
 
 def dowload_cache_matomo_zip(version, f: typ.IO):
-    target = TEST_CACHE / f'matomo-v{version}.zip'
+    target = TEST_CACHE / f"matomo-v{version}.zip"
     expected_sha = MATOMO_ZIP_SHA1S[version]
     if target.exists():
         hasher = hashlib.sha1()
-        with target.open('rb') as test:
+        with target.open("rb") as test:
             while True:
-                data = test.read(1024*1024)
+                data = test.read(1024 * 1024)
                 if not data:
                     break
                 hasher.update(data)
         if expected_sha == hasher.hexdigest():
-            with target.open('rb') as zip_f:
+            with target.open("rb") as zip_f:
                 shutil.copyfileobj(zip_f, f)
             return
         else:
             target.unlink()
     else:
         target.parent.mkdir(parents=True, exist_ok=True)
-    tmp_target = target.with_suffix('.zip.tmp')
+    tmp_target = target.with_suffix(".zip.tmp")
     if tmp_target.exists():
         tmp_target.unlink()
-    with tmp_target.open('wb') as temp_f:
+    with tmp_target.open("wb") as temp_f:
         download_matomo_zip(version, temp_f)
     tmp_target.rename(target)
-    with target.open('rb') as zip_f:
+    with target.open("rb") as zip_f:
         shutil.copyfileobj(zip_f, f)
 
 
 @contextmanager
 def with_matomo_zip(version: str):
     with tempfile.NamedTemporaryFile() as f:
-    # with open(f"matomo-v{version}.zip", 'wb') as f:
-        dowload_cache_matomo_zip (version, f)
+        # with open(f"matomo-v{version}.zip", 'wb') as f:
+        dowload_cache_matomo_zip(version, f)
         yield f
 
 
@@ -70,9 +71,9 @@ def with_extracted_matomo(version: str):
         p = pathlib.Path(d)
         with with_matomo_zip(version) as f, zipfile.ZipFile(f, "r") as z:
             for name in z.namelist():
-                if not name.startswith('matomo/'):
+                if not name.startswith("matomo/"):
                     continue
-                if name[-1] == '/':
+                if name[-1] == "/":
                     continue
                 _, _, target_name = name.partition("/")
                 target = p / target_name

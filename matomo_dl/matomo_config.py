@@ -1,6 +1,7 @@
 import collections
 import re
 import typing as typ
+import string
 
 SECTION_RE = re.compile(r"^\[(.*?)\](\s*;|$)")
 ENTRY_RE = re.compile(r"^(.*?)\s*=\s*(.*?)(\s*;|$)")
@@ -73,8 +74,8 @@ def _value_to_string(key: str, value: ConfigValues) -> str:
         return f"{key} =\n"
     elif isinstance(value, str):
         if not value:
-            return f"{key} =\n"
-        elif value[0] in "0123456789":
+            return f'{key} = ""\n'
+        elif value[0] not in string.ascii_letters:
             return f'{key} = "{value}"\n'
         else:
             return f"{key} = {value}\n"

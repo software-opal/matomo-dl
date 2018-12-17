@@ -27,16 +27,7 @@ GENERATED_FILE_CHECKS = {
 
 
 def test_reproducable_build(cli_runner):
-    if REPRODUCABLE_LOCK_TOML.exists():
-        REPRODUCABLE_LOCK_TOML.unlink()
-    if REPRODUCABLE_NORM_TOML.exists():
-        REPRODUCABLE_NORM_TOML.unlink()
     from matomo_dl.__main__ import cli
-
-    update = cli_runner.invoke(
-        cli, ["--cache", str(CACHE), "update", str(REPRODUCABLE_TOML)]
-    )
-    assert update.exit_code == 0
     output1 = TESTS_FOLDER / "reproducable-1.tar.gz"
     output2 = TESTS_FOLDER / "reproducable-2.tar.gz"
     for output in [output1, output2]:
@@ -53,7 +44,7 @@ def test_reproducable_build(cli_runner):
                 str(output),
             ],
         )
-        assert build.exit_code == 0
+        assert build.exit_code == 0, build.output
 
     subprocess.run(
         [
@@ -78,6 +69,3 @@ def test_reproducable_build(cli_runner):
             gened_file = b"".join(tar.extractfile(tar_path)).decode()
             target_file = check_path.read_text()
             assert gened_file == target_file
-
-        static = "".join(tar.extractfile())
-        config = "".join(tar.extractfile())

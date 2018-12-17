@@ -27,3 +27,7 @@ def test_base_install_generates_good_config():
         assert "BulkTracking" not in installed
         assert "Diagnostics" in installed
         assert "UserId" in installed
+
+        # Check for duplicates
+        assert sorted(installed) == sorted(set(installed))
+        assert sorted(plugins) == sorted(set(plugins))

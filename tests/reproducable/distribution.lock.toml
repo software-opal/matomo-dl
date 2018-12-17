@@ -1,0 +1,25 @@
+distribution_hash = "sha256:dddaad54de491d6923edd2600e26519f57fd9c1e68cdf9806163af6711018bfd"
+
+[matomo]
+version = "3.6.1"
+link = "https://builds.matomo.org/matomo-3.6.1.zip"
+hash = "sha256:76b0e92662a8e4f80b2722aedc9ae1afbd54340ce8a3895576bc96d745ffe47d"
+extraction_root = "matomo/"
+
+[plugin_locks.InvalidateReports]
+extraction_root = "InvalidateReports/"
+version = "0.1.1"
+link = "https://plugins.matomo.org/api/2.0/plugins/InvalidateReports/download/0.1.1"
+hash = "sha256:f10578a5b1406d59fff3e4890355083a65f4dece43cc6b19388902540e93b685"
+
+[plugin_locks.LoginFailLog]
+extraction_root = "LoginFailLog/"
+version = "0.1.1"
+link = "https://plugins.matomo.org/api/2.0/plugins/LoginFailLog/download/0.1.1"
+hash = "sha256:86a2ba6fa2f57fd6631c5922b720188aef53d5bcdd37fcf53a507acf4fbc01bc"
+
+[plugin_locks.ForceSSL]
+extraction_root = "ForceSSL/"
+version = "3.0.2"
+link = "https://plugins.matomo.org/api/2.0/plugins/ForceSSL/download/3.0.2"
+hash = "sha256:65b1cac2e6f9371dfc47e11422ba0ae4ce4c0779412d54808b8e11779bf01855"

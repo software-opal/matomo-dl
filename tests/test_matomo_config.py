@@ -3,6 +3,7 @@ import io
 from matomo_dl import matomo_config
 import pathlib
 
+
 def test_read():
     DATA = """
 ; I'm a comment
@@ -35,7 +36,7 @@ array[] = Plugins
                     ]
                 ),
             ),
-            ("arrays", OrderedDict([("array", [10, "coffee", None, 'Plugins'])])),
+            ("arrays", OrderedDict([("array", [10, "coffee", None, "Plugins"])])),
         ]
     )
 
@@ -75,8 +76,8 @@ array[] = tepid
 
 
 def test_with_real_global():
-    f = pathlib.Path(__file__).parent / 'reproducable/generated/global.ini.php'
+    f = pathlib.Path(__file__).parent / "reproducable/generated/global.ini.php"
     out = matomo_config.read(f.open())
-    assert 'Plugins' in out
-    assert 'Plugins' in out['Plugins']
-    assert 'Diagnostics' in out['Plugins']['Plugins']
+    assert "Plugins" in out
+    assert "Plugins" in out["Plugins"]
+    assert "Diagnostics" in out["Plugins"]["Plugins"]

@@ -1,5 +1,4 @@
-./distribution.norm.toml
-./distribution.lock.toml
+distribution.norm.toml
 
 ./reproducable-1.tar.gz
 ./reproducable-2.tar.gz
