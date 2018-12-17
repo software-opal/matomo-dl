@@ -1,8 +1,8 @@
+import json
+import pathlib
 import subprocess
 import sys
-import pathlib
 import tarfile
-import json
 
 TESTS_FOLDER = pathlib.Path(__file__).parent
 ROOT = TESTS_FOLDER.parent
@@ -28,6 +28,7 @@ GENERATED_FILE_CHECKS = {
 
 def test_reproducable_build(cli_runner):
     from matomo_dl.__main__ import cli
+
     output1 = TESTS_FOLDER / "reproducable-1.tar.gz"
     output2 = TESTS_FOLDER / "reproducable-2.tar.gz"
     for output in [output1, output2]:

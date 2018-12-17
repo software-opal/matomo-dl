@@ -1,11 +1,12 @@
-from contextlib import contextmanager
-import tempfile
-import os
 import hashlib
+import os
 import pathlib
+import shutil
+import tempfile
 import typing as typ
 import zipfile
-import shutil
+from contextlib import contextmanager
+
 import requests
 
 MATOMO_ZIP_SHA1S = {"3.6.1": "59daaf90805c98de006db28fa297f01e1dd235ce"}

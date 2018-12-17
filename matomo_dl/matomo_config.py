@@ -1,7 +1,7 @@
 import collections
 import re
-import typing as typ
 import string
+import typing as typ
 
 SECTION_RE = re.compile(r"^\[(.*?)\](\s*;|$)")
 ENTRY_RE = re.compile(r"^(.*?)\s*=\s*(.*?)(\s*;|$)")
@@ -9,19 +9,10 @@ ENTRY_RE = re.compile(r"^(.*?)\s*=\s*(.*?)(\s*;|$)")
 ConfigValueScalars = typ.Union[None, int, float, str]
 ConfigValues = typ.Union[ConfigValueScalars, typ.List[ConfigValueScalars]]
 
-if not hasattr(typ, "OrderedDict"):
 
-    class OrderedDict(collections.OrderedDict, typ.MutableMapping[typ.KT, typ.VT]):
-        pass
-
-
-else:
-    OrderedDict = OrderedDict
-
-
-def read(file: typ.Iterable[str]) -> OrderedDict[str, OrderedDict[str, ConfigValues]]:
-    current_section: OrderedDict[str, ConfigValues] = collections.OrderedDict()
-    config: OrderedDict[str, OrderedDict[str, ConfigValues]] = collections.OrderedDict()
+def read(file: typ.Iterable[str]) -> typ.Dict[str, typ.Dict[str, ConfigValues]]:
+    current_section: typ.Dict[str, ConfigValues] = collections.OrderedDict()
+    config: typ.Dict[str, typ.Dict[str, ConfigValues]] = collections.OrderedDict()
     for line in file:
         line = line.strip()
         if not line or line[0] == ";":

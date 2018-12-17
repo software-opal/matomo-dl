@@ -1,7 +1,8 @@
-from collections import OrderedDict
 import io
-from matomo_dl import matomo_config
 import pathlib
+from collections import OrderedDict
+
+from matomo_dl import matomo_config
 
 
 def test_read():

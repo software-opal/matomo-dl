@@ -1,10 +1,10 @@
-from .fixtures import with_extracted_matomo
-from matomo_dl.bundle.info import BuildInformation
-from matomo_dl.bundle.customisation.config import update_plugins_list, logger
-from matomo_dl import matomo_config
-
-import shutil
 import logging
+import shutil
+
+from matomo_dl import matomo_config
+from matomo_dl.bundle.customisation.config import logger, update_plugins_list
+from matomo_dl.bundle.info import BuildInformation
+from .fixtures import with_extracted_matomo
 
 
 def test_base_install_generates_good_config():
